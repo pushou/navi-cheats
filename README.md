@@ -1,2 +1,2 @@
 # navi-cheats
-navi cheats
+navi cheats 

@@ -30,7 +30,7 @@ sudo ufw show <SHOW_SOCKETS>
 
 $ POLICY: echo 'allow deny' | tr ' ' '\n'
 $ STATUS: echo 'enable disable reset' | tr ' ' '\n'
-$ SHOW_SOCKETS: echo 'listening added' tr ' ' '\n'
+$ SHOW_SOCKETS: echo 'listening added' | tr ' ' '\n'
 $ UFW_RULES_NUMBER: sudo ufw status numbered| awk '{print $2}'|grep -o '[[:digit:]]*' 
 $ WAY: echo 'outgoing incoming' | tr ' ' '\n'
 $ NNPORT :  cat /etc/services | awk '{print $1}' | egrep -v '^#'| tr ' ' '\n'  
