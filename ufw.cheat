@@ -1,0 +1,22 @@
+% ufw
+
+# ufw status
+sudo ufw status numbered
+
+# ufw default policy
+sudo ufw default <POLICY> <WAY>
+
+# ufw allow port
+sudo ufw <POLICY> <NNPORT>
+
+$ POLICY: echo 'allow deny' | tr ' ' '\n'
+$ WAY: echo 'outgoing incoming' | tr ' ' '\n'
+$ NNPORT :  cat /etc/services | awk '{print $1}' | egrep -v '^#'| tr ' ' '\n'  
+$ START_PORT: echo {0..65535} | tr ' ' '\n'
+$ END_PORT: echo {0..65535} | tr ' ' '\n'
+$ PORT: echo {0..65535} | tr ' ' '\n'
+$ TO_PORT: echo {0..65535} | tr ' ' '\n'
+$ PROTO: echo 'tcp udp' | tr ' ' '\n'
+$ IPSET_TYPE: echo 'hash:ip'
+$ IPSET: firewall-cmd --get-ipsets | tr ' ' '\n'
+
