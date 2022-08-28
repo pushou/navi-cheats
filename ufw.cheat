@@ -35,7 +35,7 @@ $ UFW_RULES_NUMBER: sudo ufw status numbered| awk '{print $2}'|grep -o '[[:digit
 $ WAY: echo 'outgoing incoming' | tr ' ' '\n'
 $ NNPORT :  cat /etc/services | awk '{print $1}' | egrep -v '^#'| tr ' ' '\n'  
 $ START_PORT: echo {1..65535} | tr ' ' '\n'
-$ END_PORT: echo {0..65535} | tr ' ' '\n'
+$ END_PORT: echo {1..65535} | tr ' ' '\n'
 $ PORT: echo {1..65535} | tr ' ' '\n'
 $ TO_PORT: echo {1..65535} | tr ' ' '\n'
 $ PROTO: echo 'tcp udp' | tr ' ' '\n'

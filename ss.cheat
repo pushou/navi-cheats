@@ -30,6 +30,9 @@ ss -<PROTO_LETTER>t '( dport = <NNPORT> or sport = <NNPORT> )'
 # filter by address and numerical port number ss -at '( dport = :22 or sport = :22 )'
 ss -<PROTO_LETTER>t '( dport = <PORT> or sport = <PORT> )' 
 
+# source port is greater than 5000
+ss -n<PROTO_LETTER> src <IP_ADDRESS> sport gt <PORT>
+
 
 $ PROTO_LETTER: echo 't u a'| tr ' ' '\n'
 $ PROTO: echo 'tcp udp' | tr ' ' '\n'
