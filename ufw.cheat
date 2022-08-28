@@ -3,19 +3,41 @@
 # ufw status
 sudo ufw status numbered
 
+# ufw enable disable reset
+sudo ufw <STATUS>
+
 # ufw default policy
 sudo ufw default <POLICY> <WAY>
 
-# ufw allow port
+# ufw allow port text
 sudo ufw <POLICY> <NNPORT>
 
+# ufw allow numerical port 
+sudo ufw <POLICY> <PORT>/<PROTO> comment <COMMENT>
+
+# ufw port range
+sudo ufw <POLICY> <START_PORT>:<END_PORT> proto <PROTO>
+
+# ufw allow from ip|network
+sudo ufw <POLICY> from <IP> to any port <PORT> proto <PROTO>
+
+# ufw delete number rules
+sudo ufw delete <UFW_RULES_NUMBER>
+
+# ufw show rules listening|added
+sudo ufw show <SHOW_SOCKETS>
+
+
 $ POLICY: echo 'allow deny' | tr ' ' '\n'
+$ STATUS: echo 'enable disable reset' | tr ' ' '\n'
+$ SHOW_SOCKETS: echo 'listening added' tr ' ' '\n'
+$ UFW_RULES_NUMBER: sudo ufw status numbered| awk '{print $2}'|grep -o '[[:digit:]]*' 
 $ WAY: echo 'outgoing incoming' | tr ' ' '\n'
 $ NNPORT :  cat /etc/services | awk '{print $1}' | egrep -v '^#'| tr ' ' '\n'  
-$ START_PORT: echo {0..65535} | tr ' ' '\n'
+$ START_PORT: echo {1..65535} | tr ' ' '\n'
 $ END_PORT: echo {0..65535} | tr ' ' '\n'
-$ PORT: echo {0..65535} | tr ' ' '\n'
-$ TO_PORT: echo {0..65535} | tr ' ' '\n'
+$ PORT: echo {1..65535} | tr ' ' '\n'
+$ TO_PORT: echo {1..65535} | tr ' ' '\n'
 $ PROTO: echo 'tcp udp' | tr ' ' '\n'
 $ IPSET_TYPE: echo 'hash:ip'
 $ IPSET: firewall-cmd --get-ipsets | tr ' ' '\n'
