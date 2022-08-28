@@ -1,0 +1,15 @@
+% navi
+
+# browse navi repos
+navi repo browse
+
+# navi repo add  
+navi repo add https://github.com/pushou/navi-cheats.git
+
+# navi others 
+navi --<OTHERS> ssh
+
+
+$ OTHERS: echo 'cheatsh tldr' | tr ' ' '\n'
+
+
