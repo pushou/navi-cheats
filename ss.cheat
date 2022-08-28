@@ -1,0 +1,44 @@
+%  network,ss,pushou
+
+# ss listening tcp or udp
+ss  -l<PROTO_LETTER>
+
+# ss all tcp or udp
+ss -<PROTO>a
+
+# ss -tunlp (tcp udp numeric listening process)
+ss -tunlp
+
+# ss stats
+ss -s
+
+# ss display timer (-o)
+ss -tn -o
+
+# ss ipv4 or 6
+ss -tl<IP_VERSION>
+
+# ss tcp filter 
+ss -<PROTO_LETTER><IP_VERSION> state <TCP_FILTER>
+
+# continuous read
+watch -n 1 "ss -t4 state syn-sent" 
+
+# filter by address and text port number ss -at '( dport = :ssh or sport = :ssh )'
+ss -<PROTO_LETTER>t '( dport = <NNPORT> or sport = <NNPORT> )' 
+
+# filter by address and numerical port number ss -at '( dport = :22 or sport = :22 )'
+ss -<PROTO_LETTER>t '( dport = <PORT> or sport = <PORT> )' 
+
+
+$ PROTO_LETTER: echo 't u a'| tr ' ' '\n'
+$ PROTO: echo 'tcp udp' | tr ' ' '\n'
+$ IP_VERSION: echo '4 6' | tr ' ' '\n'
+$ AT_NT: echo 'at nt' | tr ' ' '\n'
+$ TCP_FILTER: echo 'established syn-sent syn-recv fin-wait-1 fin-wait-2 time-wait closed close-wait last-ack closing synchronized'| tr ' ' '\n'
+$ SD_PORT: echo 'sport dport'| tr ' ' '\n'
+$ NNPORT :  cat /etc/services | awk '{print ":"$1}' | egrep -v '^:#'| tr ' ' '\n'
+$ START_PORT: echo {1..65535} | tr ' ' '\n'
+$ END_PORT: echo {1..65535} | tr ' ' '\n'
+$ PORT: echo {1..65535} | tr ' ' '\n'
+$ TO_PORT: echo {1..65535} | tr ' ' '\n'
