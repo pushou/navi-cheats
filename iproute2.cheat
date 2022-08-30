@@ -1,0 +1,65 @@
+% iproute2,pushou
+
+; everyday use
+# ip -color --brief a
+ip -c --brief a
+
+# ip link set  <PHY_NETWORK_INT> <UP_DOWN>
+sudo ip link set <PHY_NETWORK_INT> <UP_DOWN>
+
+# ip address show dev <PHY_NETWORK_INT>
+ip  a sho dev <PHY_NETWORK_INT> 
+
+# ip address flush dev 
+sudo ip a flush dev <PHY_NETWORK_INT>
+
+# ip -4  route  get <NETWORK_OR_IPADDR>  
+sudo ip -4  route  get <NETWORK_OR_IPADDR>       
+
+# ip -4  route  list <NETWORK_OR_IPADDR>  
+sudo ip -4  route  list <NETWORK_OR_IPADDR>       
+
+# ip -<IP_VERSION> route <IPROUTE_ORDERS> <NETWORK> via <IP> dev <PHY_NETWORK_INT>
+sudo ip -<IP_VERSION> route  <IPROUTE_ORDERS> <NETWORK> via <IP> dev <PHY_NETWORK_INT>        
+
+# create the pair of veth interfaces named, veth0 and veth1
+sudo ip link add veth0 type veth peer name veth1
+
+;netns 
+
+# ip netns add <NETNS_NAME>
+sudo ip netns add <NETNS_NAME>
+
+# ip netns list
+sudo ip netns list
+
+# add veth in netns 
+sudo ip link set <VETH_INT> netns <NETNS>
+
+# ip netns exec <NETNS>  python3 -m http.server 8080
+sudo ip netns exec <NETNS>  python3 -m http.server 8080
+
+;  full param too complicated?
+# ip <IP_VERSION> <OBJECT> <ORDER>
+sudo ip -<IP_VERSION> <OBJECTS> <ORDERS> dev <PHY_NETWORK_INT>        
+
+; I never use theese. Only for memo. See interesting link  http://baturin.org/docs/iproute2
+
+# ip netconf show
+sudo ip -<IP_VERSION> netconf show dev <PHY_NETWORK_INT>
+# ip monitor <OBJECTS> or all
+sudo ip monitor <OBJECTS>
+
+# ip monitor ${event type} file ${path to the log file}
+sudo rtmon -family <FAMILY> <RTMON_ORDER> file '/tmp/rtmon.log'
+
+$ IP_VERSION: echo '4 6' | tr ' ' '\n'
+$ UP_DOWN: echo 'up down' | tr ' ' '\n'
+$ OBJECTS: echo $(ip --help 2>&1| awk '/OBJECT/ {print $0}'|awk -F:'|' '{print $3}'|sed 's/[|,=,{,},OPTIONS]//g')| tr ' ' '\n'
+$ ORDERS: echo 'add show del flush pids exec' | tr ' ' '\n'
+$ IPROUTE_ORDERS: echo 'list get flush add del change append replace showdump save restore' | tr ' ' '\n'
+$ PHY_NETWORK_INT: echo $(sudo ip link show|awk '{print $2}'|egrep '^en|^wl'|sed 's/://')| tr ' ' '\n'
+$ VETH_INT: echo $(sudo ip link show|awk '{print $2}'|grep '^veth'|sed 's/://'|awk '{print $1}' FS=@)| tr ' ' '\n'
+$ FAMILY: echo 'inet inet6' | tr ' ' '\n'
+$ RTMON_ORDER: echo 'route link address all' | tr ' ' '\n'
+$ NETNS: echo $(sudo ip netns list|awk '{print $1}')| tr ' ' '\n'

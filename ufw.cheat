@@ -1,4 +1,4 @@
-% ufw
+% ufw,pushou
 
 # ufw status
 sudo ufw status numbered

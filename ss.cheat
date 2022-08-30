@@ -1,11 +1,5 @@
 %  network,ss,pushou
 
-# ss listening tcp or udp
-ss  -l<PROTO_LETTER>
-
-# ss all tcp or udp
-ss -<PROTO>a
-
 # ss -tunlp (tcp udp numeric listening process)
 ss -tunlp
 
@@ -14,9 +8,6 @@ ss -s
 
 # ss display timer (-o)
 ss -tn -o
-
-# ss ipv4 or 6
-ss -tl<IP_VERSION>
 
 # ss tcp filter 
 ss -<PROTO_LETTER><IP_VERSION> state <TCP_FILTER>
@@ -34,7 +25,7 @@ ss -<PROTO_LETTER>t '( dport = <PORT> or sport = <PORT> )'
 ss -n<PROTO_LETTER> src <IP_ADDRESS> sport gt <PORT>
 
 
-$ PROTO_LETTER: echo 't u a'| tr ' ' '\n'
+$ PROTO_LETTER: echo 'tcp udp all'| tr ' ' '\n'
 $ PROTO: echo 'tcp udp' | tr ' ' '\n'
 $ IP_VERSION: echo '4 6' | tr ' ' '\n'
 $ AT_NT: echo 'at nt' | tr ' ' '\n'
