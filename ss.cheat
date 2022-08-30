@@ -10,23 +10,22 @@ ss -s
 ss -tn -o
 
 # ss tcp filter 
-ss -<PROTO_LETTER><IP_VERSION> state <TCP_FILTER>
+ss -<IP_VERSION> --<PROTO> state <TCP_FILTER>
 
 # continuous read
 watch -n 1 "ss -t4 state syn-sent" 
 
 # filter by address and text port number ss -at '( dport = :ssh or sport = :ssh )'
-ss -<PROTO_LETTER>t '( dport = <NNPORT> or sport = <NNPORT> )' 
+ss -<IP_VERSION> --<PROTO> '( dport = <NNPORT> or sport = <NNPORT> )' 
 
 # filter by address and numerical port number ss -at '( dport = :22 or sport = :22 )'
-ss -<PROTO_LETTER>t '( dport = <PORT> or sport = <PORT> )' 
+ss -<IP_VERSION> --<PROTO> '( dport = <PORT> or sport = <PORT> )' 
 
 # source port is greater than 5000
-ss -n<PROTO_LETTER> src <IP_ADDRESS> sport gt <PORT>
+ss -<IP_VERSION> --<PROTO> src <IP_ADDRESS> sport gt <PORT>
 
 
-$ PROTO_LETTER: echo 'tcp udp all'| tr ' ' '\n'
-$ PROTO: echo 'tcp udp' | tr ' ' '\n'
+$ PROTO: echo 'tcp udp all' | tr ' ' '\n'
 $ IP_VERSION: echo '4 6' | tr ' ' '\n'
 $ AT_NT: echo 'at nt' | tr ' ' '\n'
 $ TCP_FILTER: echo 'established syn-sent syn-recv fin-wait-1 fin-wait-2 time-wait closed close-wait last-ack closing synchronized'| tr ' ' '\n'
