@@ -1,0 +1,4 @@
+% containers, insecure
+
+# docker most insecure container
+docker run -it --privileged --net=host --pid=host --ipc=host --volume /:/host busybox chroot /host
