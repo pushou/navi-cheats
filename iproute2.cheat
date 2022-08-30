@@ -24,6 +24,28 @@ sudo ip -<IP_VERSION> route  <IPROUTE_ORDERS> <NETWORK> via <IP> dev <PHY_NETWOR
 
 # create the pair of veth interfaces named, veth0 and veth1
 sudo ip link add veth0 type veth peer name veth1
+sudo ip netns add netns1
+sudo ip netns add netns2
+ip link add veth1 netns netns1 type veth peer name veth2 netns netns2
+
+# create macvlan
+sudo ip link add macvlan1 link eth0 type macvlan mode bridge
+sudo ip netns add netns1
+sudo ip netns add netns2
+sudo ip link set macvlan1 netns netns1
+
+# create ipvlan
+ip netns add nsipvlan1
+ip link add name ipvl0 link eth0 type ipvlan mode l2
+ip link set dev ipvl0 netns nsipvlan1
+
+# create macvtap
+ip link add link eth0 name macvtap0 type macvtap
+
+# create dummy
+sudo ip link add dummy1 type dummy
+sudo ip addr add 1.1.1.1/24 dev dummy1
+sudo ip link set dummy1 up
 
 ;netns 
 
