@@ -1,0 +1,21 @@
+% qemu, pushou
+
+# create disk 
+qemu-img create -f qcow2 <DISK_NAME>.img <DISK_SIZE>
+
+
+# create vm (macos hvf)
+qemu-system-x86_64  
+-m 2048 \ 
+-vga virtio \
+-display cocoa,show-cursor=on \
+-usb \
+-device usb-tablet \
+-drive file=./ubuntu-22.04-amd64.qcow2,if=virtio \
+-device e1000,netdev=net0 \
+-netdev user,id=net0,hostfwd=tcp::10022-:22 \
+-accel hvf \
+-cpu Penryn,vendor=GenuineIntel
+
+
+

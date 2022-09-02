@@ -1,0 +1,50 @@
+% virsh, pushou
+
+# Connect to a local hypervisor session
+virsh connect qemu:///system quemu
+
+# Connect to a hypervisor session on a remote Linux
+virsh --connect qemu+ssh://<USERNAME>@<IP_ADDRESS>/system
+
+# Connect to a hypervisor session on a remote mac (user network => session)
+connect qemu+ssh://<USERNAME>@<IP_ADDRESS>/session?socket=/usr/local/var/run/libvirt/libvirt-sock
+
+# List all domains
+virsh list --all
+
+# List all network
+virsh net-list --all
+
+# Node info
+virsh nodeinfo
+
+# pool list
+virsh pool-list --details
+
+# volume delete from pool
+sudo virsh pool-list
+sudo virsh vol-list --pool default
+sudo virsh vol-delete test_vol2.qcow2 --pool default
+sudo virsh pool-refresh default
+sudo virsh vol-list default
+
+# quit console (FRENCH Keyboard)
+CTRL+Shift+5
+CTRL+Shift+$€* 
+
+# stop all VM
+for i in $(sudo virsh list | grep running | awk '{print $2}')                                                             ─╯
+do
+    sudo virsh shutdown $i
+done
+
+# Create a guest from a configuration file
+virsh create <path_to_config_file_xml>
+
+# start stop shutdown destroy reboot undefine edit dumpxml save a guest
+virsh <COMMAND> <domain>
+
+# Delete a running guest && purge storage
+virsh destroy <domain> && virsh undefine <domain> --remove-all-storage
+
+$ COMMAND: echo 'start stop shutdown destroy reboot undefine edit dumpxml save' | tr ' ' '\n'

@@ -1,0 +1,8 @@
+% os-info , pushou
+
+# install ubuntu
+sudo apt install  libosinfo-bin
+
+# List image 
+osinfo-query os
+osinfo-query os vendor="Fedora Project"
