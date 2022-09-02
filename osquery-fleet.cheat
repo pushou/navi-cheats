@@ -1,3 +1,63 @@
-% osquery
+% osquery, pushou
+; from https://hackertarget.com/osquery-linux-tutorial/
 
+#list running processes. similar to ps -ef command
+osqueryi --json "SELECT version FROM os_version;"|jq '[.]'
+osqueryi --json "SELECT * FROM processes;"|jq '[.]'
 
+# show logged in users. similar to the who command
+osqueryi --json "SELECT * FROM logged_in_users;"|jq '[.]'
+
+# gather physical system information
+osqueryi --json "SELECT hostname, cpu_brand, cpu_physical_cores, cpu_logical_cores, physical_memory FROM system_info;"|jq '[.]'
+
+# gather physical system information json
+osqueryi --json "SELECT uuid, hardware_serial, hostname, cpu_subtype, cpu_brand, physical_memory, hardware_vendor, hardware_model FROM system_info;"|jq '.[]'
+
+#list installed packages with a filter
+osqueryi --json "SELECT * FROM deb_packages WHERE name LIKE 'python3%';"|jq '[.]'
+
+# execute curl and report time / HTTP response code
+osqueryi --json "SELECT url, round_trip_time, response_code FROM curl WHERE url = 'https://github.com/';"|jq '[.]'
+
+# calculate md5 hash of a file
+osqueryi --json "SELECT md5 FROM hash WHERE path = '/etc/passwd';"|jq '[.]'
+
+# show usb, hard drive changes and other hardware state changes
+osqueryi --json "SELECT * FROM hardware_events;"|jq '[.]'
+
+# retrieve commands from process event table that match filter (audit events)
+osqueryi --json "SELECT * FROM process_events WHERE cmd_line LIKE 'nmap%';"|jq '[.]'
+
+#show open socket / network connections similar to netstat
+osqueryi --json "SELECT * FROM process_open_sockets;"|jq '[.]'
+
+# retrieve certificate information using curl and dump json output to shell
+osqueryi --json "osqueryi --json "SELECT * FROM curl_certificate WHERE hostname = 'api.hackertarget.com:443';"|jq '[.]'
+
+# gather file attributes and details
+osqueryi --json "SELECT * FROM file WHERE path = '/etc/passwd';"|jq '[.]'
+
+# a well documented example to show running process where binary has been deleted from disk (common in malware)
+osqueryi --json "SELECT name, path, pid FROM processes WHERE on_disk = 0;"|jq '[.]'
+
+# gather information on running containers (docker)
+osqueryi --json "SELECT containers, containers_running, containers_paused, containers_stopped FROM docker_info;"|jq '[.]'
+
+#show processes running from container that matches the id
+osqueryi --json "SELECT pid, cmdline FROM docker_container_processes WHERE id = '$container_id';"|jq '[.]'
+
+# processes with json output
+echo "select pid ,name FROM processes order by start_time desc limit 10;" | osqueryi --json|jq '.[]'"|jq '[.]'
+
+# list packages with json output
+echo "select * from deb_packages limit 2;" | osqueryi --json|jq '.[]'"|jq '[.]'
+
+# arp cache with json output
+echo "select * from arp_cache;" | osqueryi --json|jq '.[]'"|jq '[.]'
+
+# network interface with json output
+echo "select * from interface_details;" | osqueryi --json|jq '.[].interface'"|jq '[.]'
+
+# process name with json output
+echo "select * from processes;" | osqueryi --json|jq '.[].name'"|jq '[.]'
