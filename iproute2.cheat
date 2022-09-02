@@ -26,26 +26,29 @@ sudo ip -<IP_VERSION> route  <IPROUTE_ORDERS> <NETWORK> via <IP> dev <PHY_NETWOR
 sudo ip link add veth0 type veth peer name veth1
 sudo ip netns add netns1
 sudo ip netns add netns2
-ip link add veth1 netns netns1 type veth peer name veth2 netns netns2
+sudo ip link add veth1 netns netns1 type veth peer name veth2 netns netns2
 
 # create macvlan
-sudo ip link add macvlan1 link eth0 type macvlan mode bridge
-sudo ip netns add netns1
-sudo ip netns add netns2
-sudo ip link set macvlan1 netns netns1
+sudo ip link add macvlan1 link <PHY_NETWORK_INT> type macvlan mode bridge
+;sudo ip netns add netns1
+;sudo ip netns add netns2
+;sudo ip link set macvlan1 netns netns1
 
 # create ipvlan
-ip netns add nsipvlan1
-ip link add name ipvl0 link eth0 type ipvlan mode l2
-ip link set dev ipvl0 netns nsipvlan1
+sudo ip link add name ipvl0 link <PHY_NETWORK_INT> type ipvlan mode l2
+;ip netns add nsipvlan1
+;ip link set dev ipvl0 netns nsipvlan1
 
 # create macvtap
-ip link add link eth0 name macvtap0 type macvtap
+sudo ip link add link <PHY_NETWORK_INT> name macvtap0 type macvtap
 
 # create dummy
 sudo ip link add dummy1 type dummy
 sudo ip addr add 1.1.1.1/24 dev dummy1
 sudo ip link set dummy1 up
+
+# ip link delete dummy|veth|macvlan|macvtap|ipvlan
+sudo ip link delete <NO_PHY_NETWORK_INT> 
 
 ;netns 
 
@@ -65,6 +68,7 @@ sudo ip netns exec <NETNS>  python3 -m http.server 8080
 # ip <IP_VERSION> <OBJECT> <ORDER>
 sudo ip -<IP_VERSION> <OBJECTS> <ORDERS> dev <PHY_NETWORK_INT>        
 
+
 ; I never use theese. Only for memo. See interesting link  http://baturin.org/docs/iproute2
 
 # ip netconf show
@@ -81,6 +85,7 @@ $ OBJECTS: echo $(ip --help 2>&1| awk '/OBJECT/ {print $0}'|awk -F:'|' '{print $
 $ ORDERS: echo 'add show del flush pids exec' | tr ' ' '\n'
 $ IPROUTE_ORDERS: echo 'list get flush add del change append replace showdump save restore' | tr ' ' '\n'
 $ PHY_NETWORK_INT: echo $(sudo ip link show|awk '{print $2}'|egrep '^en|^wl'|sed 's/://')| tr ' ' '\n'
+$ NO_PHY_NETWORK_INT: echo $(sudo ip link show|awk '{print $2}'|grep -E '^mac|ipv|veth|dumy'|sed 's/://'|awk '{print $1}' FS=@)| tr ' ' '\n'
 $ VETH_INT: echo $(sudo ip link show|awk '{print $2}'|grep '^veth'|sed 's/://'|awk '{print $1}' FS=@)| tr ' ' '\n'
 $ FAMILY: echo 'inet inet6' | tr ' ' '\n'
 $ RTMON_ORDER: echo 'route link address all' | tr ' ' '\n'

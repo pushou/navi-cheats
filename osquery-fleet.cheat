@@ -1,8 +1,10 @@
 % osquery, pushou
 ; from https://hackertarget.com/osquery-linux-tutorial/
 
-#list running processes. similar to ps -ef command
+# get OS version
 osqueryi --json "SELECT version FROM os_version;"|jq '[.]'
+
+#list running processes. similar to ps -ef command
 osqueryi --json "SELECT * FROM processes;"|jq '[.]'
 
 # show logged in users. similar to the who command
@@ -51,13 +53,13 @@ osqueryi --json "SELECT pid, cmdline FROM docker_container_processes WHERE id = 
 echo "select pid ,name FROM processes order by start_time desc limit 10;" | osqueryi --json|jq '.[]'"|jq '[.]'
 
 # list packages with json output
-echo "select * from deb_packages limit 2;" | osqueryi --json|jq '.[]'"|jq '[.]'
+echo "select * from deb_packages limit 2;" | osqueryi --json|jq '.[]'
 
 # arp cache with json output
-echo "select * from arp_cache;" | osqueryi --json|jq '.[]'"|jq '[.]'
+echo "select * from arp_cache;" | osqueryi --json|jq '.[]'
 
 # network interface with json output
-echo "select * from interface_details;" | osqueryi --json|jq '.[].interface'"|jq '[.]'
+echo "select * from interface_details;" | osqueryi --json|jq '.[].interface'
 
 # process name with json output
-echo "select * from processes;" | osqueryi --json|jq '.[].name'"|jq '[.]'
+echo "select * from processes;" | osqueryi --json|jq '.[].name'

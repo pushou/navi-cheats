@@ -1,6 +1,6 @@
 % os-info , pushou
 
-# install ubuntu
+# install os-info on ubuntu
 sudo apt install  libosinfo-bin
 
 # List image 
