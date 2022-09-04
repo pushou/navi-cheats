@@ -1,2 +1,2 @@
 # navi-cheats
-navi cheats from pushou
+navi cheats from pushou 
