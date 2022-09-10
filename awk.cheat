@@ -1,0 +1,4 @@
+% awk, pushou
+
+# awk filter on fields length and pipe to fzf
+docker images --format "table {{.Repository}}\t{{.Tag}}"|awk '{if(length($2) < 9 && $2!="") print $1":"$2}'| egrep -v 'REPOSITORY:TAG|\<none\>'|fzf

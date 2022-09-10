@@ -3,3 +3,8 @@
 # lscpu get NUMA (rg = apt install ripgrep)
 lscpu|rg NUMA
 
+# iperf3 cpu pinned
+iperf3 --affinity 2 --client remotehost
+
+# ipperf3 numactl 
+numactl --physcpubind=2 iperf3 -c remotehost

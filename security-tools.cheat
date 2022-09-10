@@ -1,0 +1,18 @@
+% security, tools, pushou
+
+# nrich shodan
+echo 194.199.227.220 |nrich -
+
+# nrich read ip list
+wget http://opendbl.net/lists/tor-exit.list -O /tmp/tor-exit.list 
+nrich  /tmp/tor-exit.list
+
+# nrich json
+echo 194.199.227.220|nrich - -o json  |jq
+
+# nrich
+seq -f "194.199.227.%g" 1 254 > /tmp/iplist.txt 
+nrich /tmp/iplist.txt
+
+# shodan verify if limit api is overcharged
+curl https://internetdb.shodan.io|jq

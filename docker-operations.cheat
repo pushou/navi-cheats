@@ -1,0 +1,55 @@
+% trivy, pushou
+
+# Trivy scan local image
+sudo trivy image <IMAGES>
+
+# install Trivy (u22)
+sudo apt-get install wget apt-transport-https gnupg lsb-release
+wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+sudo apt-get update
+sudo apt-get install trivy
+
+
+$ image_id: docker images --- --headers 1 --column 3
+$ IMAGES: docker images --format '{{.Repository}}:{{.Tag}}'|egrep -v "<none"   
+
+
+% docker, repo, docker-browse, pushou
+
+# docker-browse repo
+docker-browse -r registry.iutbeziers.fr images
+
+# docker-browse save default registry
+docker-browse -r registry.iutbeziers.fr save
+
+
+% containers, insecure
+
+# docker most insecure container
+docker run -it --privileged --net=host --pid=host --ipc=host --volume /:/host busybox chroot /host
+
+
+% docker,security, pushou
+
+
+# Network is enable between containers icc:true?
+docker network ls --quiet | xargs docker network inspect --format '{{ .Name }}: {{ .Options }}' |grep enable_icc:true
+
+
+# Activate audit for Docker 
+cat <<EOF | sudo tee -a /etc/audit/rules.d/audit.rules
+-w /usr/bin/dockerd -k docker
+-w /etc/docker -p rwxa -k docker
+-w /etc/default/docker -p rwxa -k docker
+-w /etc/docker/daemon.json -p rwxa -k docker
+-w /var/lib/docker -p rwxa -k docker
+-w /usr/lib/systemd/system/docker.service -p rwxa -k docker
+-w /usr/lib/systemd/system/docker.socket -p rwxa -k docker
+-w /usr/bin/docker-runc -p rwxa -k docker
+-w /usr/bin/docker-containerd -p rwxa -k docker
+-w /usr/bin/containerd -p rwxa -k docker
+EOF
+sudo systemctl restart auditd
+
+
