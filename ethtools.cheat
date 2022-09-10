@@ -1,0 +1,8 @@
+% networks commands,pushou
+; source https://www.redhat.com/sysadmin/network-testing-iperf3
+
+# Errors on physical interfaces
+sudo ethtool --statistics <PHY_NETWORK_INT> | rg -i -e 'dropped|error'
+
+$ PHY_NETWORK_INT: echo $(sudo ip link show|awk '{print $2}'|egrep '^en|^wl'|sed 's/://')| tr ' ' '\n'
+
