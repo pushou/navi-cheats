@@ -1,0 +1,44 @@
+% capabilities, pushou
+
+# print capabilities with capsh 
+capsh --print
+
+# get Cap from /proc
+grep Cap /proc/$$/status
+
+# decode capabilities
+capsh --decode=0000000000000400
+
+# add cap
+setcap cap_net_raw+ep /sbin/ping
+getpcap /sbin/ping
+
+# list pcap from docker huntprod/caps image
+docker run --rm huntprod/caps 
+
+# list pcap from a priviliged container
+docker run --privileged --rm huntprod/caps | head -n2
+
+# add drop pcap to  docker container  huntprod/caps 
+docker run --rm --cap-drop all --cap-add net_bind_service --cap-add ipc_lock huntprod/caps
+
+# getcap for a file
+getcap /bin/ping
+
+#
+https://gist.githubusercontent.com/pushou/cfa8bc055ea854610901041ece002ebe/raw/53a427c0621fc31424220093c507e37f6cb0fe0f/gistfile1.txt
+# search for all binaries with capabilities
+getcap -r /usr/bin 2>/dev/null 
+
+
+# drop sniffing capabilities for tcpdump
+sudo capsh --drop=cap_net_raw --print -- -c "tcpdump"
+
+# edit capabilities for users
+/etc/security/capability.conf
+
+# systemd service cap
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+# capabilities explained
+curl https://gist.githubusercontent.com/pushou/cfa8bc055ea854610901041ece002ebe/raw/53a427c0621fc31424220093c507e37f6cb0fe0f/gistfile1.txt
