@@ -1,0 +1,4 @@
+% apparmor, pushou
+
+# apparmo snap perm problem u22
+sudo apparmor_parser -r /var/lib/snapd/apparmor/profiles/snap-confine*

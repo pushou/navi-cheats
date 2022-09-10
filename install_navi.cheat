@@ -1,0 +1,18 @@
+% navi,install, pushou
+
+# packages for my navi cheatsheet
+sudo apt install ripgrep
+sudo apt install  libosinfo-bin
+
+# fzf install
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf 
+~/.fzf/install
+
+# cargo install
+cargo install --locked navi 
+
+# install
+cargo install feroxbuster rustscan 
+
+
+

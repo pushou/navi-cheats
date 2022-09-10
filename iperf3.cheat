@@ -1,0 +1,5 @@
+% iperf3, numa, pushou
+
+# lscpu get NUMA (rg = apt install ripgrep)
+lscpu|rg NUMA
+
