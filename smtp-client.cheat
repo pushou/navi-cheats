@@ -1,0 +1,45 @@
+% smtp client,commands ,pushou
+
+#Vérifier que des processus écoutent bien sur les différents ports.
+lsof -i :110,995,143,993,25,587
+ss -tnlp |egrep :(110|995|143|993|25|587) # plus moderne et rapide que lsof
+
+# Vérifier que les connexions ssl pour smtps sont possibles
+openssl s_client -connect localhost:465 
+
+# list queue
+mailq
+
+# force read queue
+sudo ostqueue -f 
+sudo postfix flush
+
+# suppress all messages from queue 
+postsuper -d ALL 
+
+#show yours parameters
+postconf -n 
+#
+# systemd postfix log
+journalctl -u postfix # log daemon postfix sur VM
+
+# postfix on LAN(macvlan) with Docker
+docker network create -d macvlan --subnet=10.<ROOM>.<NUMPC>.0/16 --gateway=10.<ROOM>.255.254 --ip-range=10.<ROOM>.<NUMPC>.64/26  -o parent=<PHY_NETWORK_INT> net-<ROOM>
+docker run -d --network=net-<ROOM> -v ~/postfix:/etc/postfix   --name postfix-<ROOM>-<NUM> --hostname postfix-<ROOM>-<NUM> -it <DOCKER-IMAGE>  
+docker exec -it postfix-<ROOM>-<NUM> bash
+
+# postfix on LAN 192 only with Docker and macvlan
+docker network create -d macvlan --subnet=192.168.1.0/24  --gateway=192.168.1.1 --ip-range=192.168.1.251/30  -o parent=<PHY_NETWORK_INT> net-192
+docker run -d --network=net-192 -v ~/postfix:/etc/postfix --name postfix-192-0 --hostname postfix-192-0 -it registry.iutbeziers.fr/postfixiut:latest  
+docker exec -it postfix-192-0 bash
+
+# Verify tls  
+openssl s_client -connect <server-smtp>:<SMTP-PORT> -starttls smtp
+
+# swaks sender 
+swaks -t <auth-email> -s <smtp-server>:<SMTP-PORT> -tls -au <auth-email> -ap <auth-email>  -f <auth-email>
+
+$ PHY_NETWORK_INT: echo $(sudo ip link show|awk '{print $2}'|egrep '^en|^wl'|sed 's/://')| tr ' ' '\n'
+$ ROOM: echo "192 202 203 204 205 206 207 213 214" | tr ' ' '\n'
+$ SMTP-PORT: echo "465 25 587" | tr ' ' '\n' 
+$ DOCKER-IMAGE: echo "registry.iutbeziers.fr/debianiut:latest registry.iutbeziers.fr/postfixiut:latest" | tr ' ' '\n'

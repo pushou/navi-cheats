@@ -53,3 +53,9 @@ EOF
 sudo systemctl restart auditd
 
 
+# get ip address for a container
+docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <ID_C_DOCKER>
+
+$ID_C_DOCKER:  docker ps -q
+
+
