@@ -64,13 +64,18 @@ dig www.umontpellier.fr  +noall +answer
 dig @8.8.8.8 +https www.google.fr
 
 # lookup from file query.txt
-dig -f query.txt +short
+dig -f query.txt +short 
+
+# get all  record for a domain
+dig +noall +answer umontpellier.fr <TYPE_ENREG>
+
 
 # dig ipv6
 dig -6 @2001:4860:4860::8888 google.com A
 
 # cat dns.flags
 curl https://gist.githubusercontent.com/pushou/ba35386d3b6122fbe20467ce1ef1822e/raw/0fae3721ab91e003a94d7b7221cf7d31c69cf8f8/dns-flag.txt
+$ TYPE_ENREG: echo 'A SOA ANY CNAME TXT MX AAAA SRV' | tr ' ' '\n'
 
 % dns,client, curl , pushou
 # doh with curl dns-json
@@ -78,6 +83,7 @@ curl -H 'accept: application/dns-json' 'https://cloudflare-dns.com/dns-query?nam
 
 # doh with curl dns-message
 curl -H 'accept: application/dns-message' 'https://dns.google/dns-query?dns=q80BAAABAAAAAAAAA3d3dwdleGFtcGxlA2NvbQAAAQAB'  | hexdump -c
+
 
 ;# doh curl (not working)
 ;curl -v --doh-insecure  --doh-url https://cloudflare-dns.com/dns-query  https://github.com
