@@ -35,6 +35,7 @@ docker exec -it postfix-192-0 bash
 
 # Verify tls  
 openssl s_client -connect <server-smtp>:<SMTP-PORT> -starttls smtp
+posttls-finger  -c -Ldebug "[<server-smtp>]:<SMTP-PORT>"
 
 # swaks sender 
 swaks -t <auth-email> -s <smtp-server>:<SMTP-PORT> -tls -au <auth-email> -ap <auth-email>  -f <auth-email>

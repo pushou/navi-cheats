@@ -1,0 +1,11 @@
+% dhcp, pushou
+
+# Simple query with nmap
+sudo nmap --script broadcast-dhcp-discover -e <PHY_NETWORK_INT>
+
+# dhcping
+sudo dhcping -t 8 -c <request-this-ip> -s <dhcp-server-address> -h <GENERATE_MAC_ADDRESS>
+
+
+$ PHY_NETWORK_INT: echo $(sudo ip link show|awk '{print $2}'|egrep '^en|^wl'|sed 's/://')| tr ' ' '\n'
+$ GENERATE_MAC_ADDRESS: echo $(openssl rand -hex 6 | sed 's/\(..\)/\1:/g; s/:$//')
