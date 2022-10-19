@@ -1,0 +1,40 @@
+% awscli, pushou
+
+# get region Name
+aws ec2 describe-regions --output json|jq -r '.Regions[].RegionName'
+
+# describe image
+aws ec2 describe-images
+
+# describe debian image
+aws ec2 describe-images --region eu-west-1 --owners 136693071363 --filters 'Name=architecture,Values=x86_64' --query 'sort_by(Images, &CreationDate)[].[CreationDate,Name,ImageId]' --output table
+
+# get runiing instance
+aws ec2 describe-instances \                                                                                                                                       ─╯
+--query "Reservations[*].Instances[*].{PublicIP:PublicIpAddress,Type:InstanceType,Name:Tags[?Key=='Name']|[0].Value,Status:State.Name}" \
+--filters "Name=instance-state-name,Values=running" "Name=instance-type,Values='t2.medium','t2.micro'" \
+--output table
+
+# get key pair
+aws ec2 describe-key-pairs
+
+# get security groups
+aws ec2 describe-security-groups
+
+# get default security group
+aws ec2 describe-security-groups | jq '.SecurityGroups[] | select (.GroupName == "default") | .GroupId' 
+
+# get default security group and put it in a bash variable
+SG_ID=$(aws ec2 describe-security-groups | jq -r '.SecurityGroups[] | select (.GroupName == "default") | .GroupId')
+
+# autorize ingress prort in a security-group
+aws ec2 authorize-security-group-ingress --group-id $SG_ID --protocol <PROTO> --port <PORT> --cidr 0.0.0.0/0
+
+# get availability zone
+aws ec2 describe-subnets | jq '.Subnets[] | select(.AvailabilityZone == "eu-west-1a") '
+
+
+$ IP_VERSION: echo '4 6' | tr ' ' '\n'
+$ PROTO: echo 'tcp udp icmp' | tr ' ' '\n'
+$ PORT: echo {1..65535} | tr ' ' '\n'
+$ FAMILY: echo 'inet inet6' | tr ' ' '\n'
