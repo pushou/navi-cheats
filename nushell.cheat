@@ -13,6 +13,9 @@ sys|select net|table -e
 # basic usage on docker
 sudo docker info --format {{json .}} | from json|less
 
+# get file > size on entire disk
+ls **/* |where size >  500Mib
+
 # systemctl output jc
 systemctl|jc --systemctl|from json|table
 
