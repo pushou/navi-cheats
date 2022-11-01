@@ -1,0 +1,38 @@
+% nu , pushou
+
+# help commands nushell
+nu
+help commands
+help sys
+
+# basic usage on sys buitins 
+sys
+sys|select net|table -e
+
+
+# basic usage on docker
+sudo docker info --format {{json .}} | from json|less
+
+# systemctl output jc
+systemctl|jc --systemctl|from json|table
+
+
+# ss output jc
+ss -tunlp|jc --ss|from json
+
+# ss get columns 
+ss -tunlp|jc --ss|from json|columns
+
+# ss output sort by local port
+ss -tunlp|jc --ss|from json|sort-by -n local_port
+
+
+# ss output where state='LISTEN'
+ss -tunlp|jc --ss|from json|sort-by -n local_port |where state == 'LISTEN'
+
+# ss output jc select port < 1024
+ss -tunlp|jc --ss|from json|sort-by -n local_port |where local_port_num < 1024
+ss -tunlp|jc --ss|from json|sort-by -n local_port |where ($it.local_port | into decimal) < 1024
+
+
+
