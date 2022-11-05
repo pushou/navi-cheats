@@ -1,4 +1,4 @@
-% nu , pushou
+% nushell , pushou
 
 # help commands nushell
 nu
@@ -10,11 +10,25 @@ sys
 sys|select net|table -e
 
 
+# get cal
+cal --full-year 2023
+
 # basic usage on docker
 sudo docker info --format {{json .}} | from json|less
 
 # get file > size on entire disk
 ls **/* |where size >  500Mib
+
+# get info on ip address
+echo 192.168.1.10/255.255.255.0 | jc --ip-address |from json|flatten
+
+# Open spreadsheet
+open --raw <file>|from ods|table -e |select column1
+open --raw <file>|from ods|flatten|flatten|get column1
+open --raw <file>|from xlsx |flatten|flatten|get column1
+
+# french df 
+df  -h |detect columns |upsert "Monté"  { |it| $"($it.Monté)($it.sur)"}|reject Monté sur
 
 # systemctl output jc
 systemctl|jc --systemctl|from json|table
@@ -37,5 +51,22 @@ ss -tunlp|jc --ss|from json|sort-by -n local_port |where state == 'LISTEN'
 ss -tunlp|jc --ss|from json|sort-by -n local_port |where local_port_num < 1024
 ss -tunlp|jc --ss|from json|sort-by -n local_port |where ($it.local_port | into decimal) < 1024
 
+# simple osquery to nushell
+osqueryi "select * FROM users;" --json|from json
 
+# osquery to nushell
+osqueryi "select * FROM docker_images;" --json|from json|update size_bytes {|it| $it.size_bytes |into filesize} |sort-by  size_bytes
 
+# osquery docker image sum size
+osqueryi "select * FROM docker_images;" --json|from json|update size_bytes {|it| $it.size_bytes |into filesize} |sort-by  size_bytes|get size_bytes |reduce -n {|it, acc| $acc.item + $it.item }
+
+# calendar from ics
+open monics2.ics|select events|to json |jq  '.[][]'|from json|get properties|each  {|it| {0: $it.0.value,1: $it.1.value,2:$it.2.value,3: $it.3.value ,4: $it.4.value ,5:$it.5.value,6:$it.6.value,7:$it.7.value,8:$it.8.value}}
+
+# calendar from ics with column name
+open monics2.ics|select events|to json |jq  '.[][]'|from json|get properties|each  {|it| {'DTSTAMP': $it.0.value,'DTSTART': $it.1.value,'DTEND':$it.2.value,'SUMMARY': $it.3.value ,'LOCATION': $it.4.value ,'DESCRIPTION':$it.5.value,'CREATED':$it.6.value,'LAST-MODIFIED':$it.7.value,'SEQUENCE':$it.8.value}}
+
+# calendar from ics convert date , rename column , drop colums
+open monics2.ics|select events|to json |jq  '.[][]'|from json|get properties|each  {|it| {'DTSTAMP': $it.0.value,'DTSTART': $it.1.value,'DTEND':$it.2.value,'SUMMARY': $it.3.value ,'LOCATION': $it.4.value ,'DESCR
+IPTION':$it.5.value,'CREATED':$it.6.value,'LAST-MODIFIED':$it.7.value,'SEQUENCE':$it.8.value}}|update DTSTAMP {|it| $it.DTSTAMP|into datetime  |to text} |update DTSTART {|it| $it.DTSTART|into datetime  |to text}|update DTEND {|it| $it.DTEND|into datetime  |
+to text}|reject DTSTAMP CREATED LAST-MODIFIED SEQUENCE
