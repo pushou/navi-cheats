@@ -1,11 +1,11 @@
 % nushell , pushou
 
-# help commands nushell
+# help commands 
 nu
 help commands
 help sys
 
-# basic usage on sys buitins 
+# basic usage on sys builtins 
 sys
 sys|select net|table -e
 
@@ -13,7 +13,7 @@ sys|select net|table -e
 # get cal
 cal --full-year 2023
 
-# basic usage on docker
+# basic usage  with docker
 sudo docker info --format {{json .}} | from json|less
 
 # get file > size on entire disk
@@ -21,6 +21,9 @@ ls **/* |where size >  500Mib
 
 # get info on ip address
 echo 192.168.1.10/255.255.255.0 | jc --ip-address |from json|flatten
+
+# ip address to nushell
+ip  --brief -j a|from json|flatten|flatten
 
 # Open spreadsheet
 open --raw <file>|from ods|table -e |select column1
@@ -32,7 +35,6 @@ df  -h |detect columns |upsert "Monté"  { |it| $"($it.Monté)($it.sur)"}|reject
 
 # systemctl output jc
 systemctl|jc --systemctl|from json|table
-
 
 # ss output jc
 ss -tunlp|jc --ss|from json
@@ -66,7 +68,7 @@ open monics2.ics|select events|to json |jq  '.[][]'|from json|get properties|eac
 # calendar from ics with column name
 open monics2.ics|select events|to json |jq  '.[][]'|from json|get properties|each  {|it| {'DTSTAMP': $it.0.value,'DTSTART': $it.1.value,'DTEND':$it.2.value,'SUMMARY': $it.3.value ,'LOCATION': $it.4.value ,'DESCRIPTION':$it.5.value,'CREATED':$it.6.value,'LAST-MODIFIED':$it.7.value,'SEQUENCE':$it.8.value}}
 
-# calendar from ics convert date , rename column , drop colums
-open monics2.ics|select events|to json |jq  '.[][]'|from json|get properties|each  {|it| {'DTSTAMP': $it.0.value,'DTSTART': $it.1.value,'DTEND':$it.2.value,'SUMMARY': $it.3.value ,'LOCATION': $it.4.value ,'DESCR
-IPTION':$it.5.value,'CREATED':$it.6.value,'LAST-MODIFIED':$it.7.value,'SEQUENCE':$it.8.value}}|update DTSTAMP {|it| $it.DTSTAMP|into datetime  |to text} |update DTSTART {|it| $it.DTSTART|into datetime  |to text}|update DTEND {|it| $it.DTEND|into datetime  |
-to text}|reject DTSTAMP CREATED LAST-MODIFIED SEQUENCE
+# calendar from ics sort by date , convert date , rename column , drop colums
+open monics2.ics|select events|to json |jq  '.[][]'|from json|get properties|each  {|it| {'DTSTAMP': $it.0.value,'DTSTART': $it.1.value,'DTEND':$it.2.value,'SUMMARY': $it.3.value ,'LOCAT
+ION': $it.4.value ,'DESCRIPTION':$it.5.value,'CREATED':$it.6.value,'LAST-MODIFIED':$it.7.value,'SEQUENCE':$it.8.value}}| sort-by DTSTART |update DTSTAMP {|it| $it.DTSTAMP|into datetime -o +1 |to text} |update DTSTART {|it| $it.DTSTART|i
+nto datetime -o +1 |to text}|update DTEND {|it| $it.DTEND|into datetime -o +1  |to text}|reject DTSTAMP CREATED LAST-MODIFIED SEQUENCE
