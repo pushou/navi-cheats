@@ -33,6 +33,9 @@ open --raw <file>|from xlsx |flatten|flatten|get column1
 # french df 
 df  -h |detect columns |upsert "Monté"  { |it| $"($it.Monté)($it.sur)"}|reject Monté sur
 
+# detect column
+netstat | detect columns -s 1 | first 20
+
 # systemctl output jc
 systemctl|jc --systemctl|from json|table
 
