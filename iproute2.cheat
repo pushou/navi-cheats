@@ -19,6 +19,14 @@ sudo ip -4  route  get <NETWORK_OR_IPADDR>
 # ip -4  route  list <NETWORK_OR_IPADDR>  
 sudo ip -4  route  list <NETWORK_OR_IPADDR>       
 
+# get ip route local table
+ip route list table local type local
+
+# vlan
+ip link add link <PHY_NETWORK_INT> <vlan> type vlan id <vlanid>
+ip link set <vlan> up
+ip link show <vlan>
+
 # ip -<IP_VERSION> route <IPROUTE_ORDERS> <NETWORK> via <IP> dev <PHY_NETWORK_INT>
 sudo ip -<IP_VERSION> route  <IPROUTE_ORDERS> <NETWORK> via <IP> dev <PHY_NETWORK_INT>        
 
