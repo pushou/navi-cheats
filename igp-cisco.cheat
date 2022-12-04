@@ -1,0 +1,64 @@
+% igp,cisco,pushou
+
+# eigrp cisco
+conf t
+   eigrp router-id 1.1.1.1
+      network 0.0.0.0 255.255.255.255
+      default-metric 100000 100 255 1 1500
+
+
+# debug eigrp
+show ip protocols
+show ip eigrp neighbors
+show ip route eigrp
+show ip eigrp interface <interface>
+show ip eigrp topology
+
+# ospf cisco 
+router ospf 1
+ passive-interface FastEthernet0/0
+ network 0.0.0.0 255.255.255.255 area 0
+
+# ospf cisco per interface loopback
+interface loopback 2
+   ip router ospf 1
+      ip network 0.0.0.0 255.255.255.255 area 0
+      ip passive-interface fastEthernet 0/0
+
+
+# ospf cisco point to point
+interface gigabitEthernet 2/0
+   ip ospf network point-to-point 
+
+# ospf cisco broadcast (default)
+interface gigabitEthernet 2/0
+   ip ospf broadcast 
+
+# ospf cisco clear
+clear ip ospf process
+
+
+# ospf cisco common describe
+sh ip ospf interfaces
+sh ip ospf nei
+sh ip route ospf 
+sh ip ospf database
+sh ip ospf interface loopback 2
+show ip ospf border-routers
+show ip ospf virtual-links
+
+
+# ospf cisco complex describe
+show ip ospf interface ethernet 0/3 | include Network
+show ip ospf | include transit
+show ip ospf database external 10.0.0.17 adv-router 10.0.0.15
+show ip ospf 1 3 database summary 10.0.15.0 adv-router 10.0.0.1
+show ip ospf database asbr-summary 10.0.0.15
+
+
+# ospf cisco debug
+debug ip ospf packet
+debug ip ospf adj
+debug ip ospf hello
+debug ip ospf lsa-generation
+
