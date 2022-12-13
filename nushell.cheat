@@ -39,6 +39,9 @@ netstat | detect columns -s 1 | first 20
 # systemctl output jc
 systemctl|jc --systemctl|from json|table
 
+# mtr from json
+mtr  -P 443 -T -c 2  -b -e -z -t -j  <FQDN> | from json|flatten|get hubs|flatten
+
 # ss output jc
 ss -tunlp|jc --ss|from json
 

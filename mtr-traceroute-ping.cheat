@@ -1,8 +1,12 @@
 % mtr, traceroute, ping, pushou
 
-# mtr mpls BGP AS
-mtr --port 443 --show-ips --mpls -z <IP>
 
-# traceroute mpls BG AS
-traceroute -A -n -e -i <IP>
+# mtr clear options
+mtr --tcp --port 443 --show-ips --mpls --aslookup --curses <FQDN>
+# mtr short options
+mtr -P 443 -T  -b -e -z -t  <FQDN> 
+# traceroute
+traceroute -A -n -e -i eth0  <FQDN>
+# nu-shell from json
+mtr  -P 443 -T -c 2  -b -e -z -t -j  <FQDN> | from json|flatten|get hubs|flatten
 
