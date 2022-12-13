@@ -1,0 +1,8 @@
+% mtr, traceroute, ping, pushou
+
+# mtr mpls BGP AS
+mtr --port 443 --show-ips --mpls -z <IP>
+
+# traceroute mpls BG AS
+traceroute -A -n -e -i <IP>
+
