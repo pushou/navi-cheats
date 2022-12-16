@@ -1,6 +1,8 @@
 % mtr, traceroute, ping, pushou
 
 
+# mtr speed
+mtr --tcp --port 443 --no-dns --curses <FQDN>
 # mtr clear options
 mtr --tcp --port 443 --show-ips --mpls --aslookup --curses <FQDN>
 # mtr short options
