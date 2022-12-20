@@ -1,0 +1,39 @@
+% wifi, pushou
+
+
+# list pci wifi card
+lspci | egrep -i --color 'wifi|wlan|wireless'
+
+# get info on wlan card(lspci)
+lspci -vv -s <ID_NETWORK_CARD>
+
+# get info on wlan card (lshw)
+sudo lshw -C network
+
+# iwconfig
+iwconfig <WIFI_DEVICE> |  grep -i --color quality
+
+# nmcli
+nmcli dev wifi
+
+# iwlist scan
+iwlist  <WIFI_DEVICE> scanning
+
+# iwlist channel
+iwlist  <WIFI_DEVICE> channel
+
+# networkctl
+networkctl status  <WIFI_DEVICE>
+
+# iw 
+sudo iw dev <WIFI_DEVICE> <IW_ORDERS>
+
+# iw station dump
+iw dev <WIFI_DEVICE> station dump
+
+# wavemon
+wavemon  <WIFI_DEVICE>
+
+$ ID_NETWORK_CARD:  lspci | egrep -i --color 'wifi|wlan|wireless'|awk '{print $1}'
+$ WIFI_DEVICE: echo $(sudo ip link show|awk '{print $2}'|egrep '^wl'|sed 's/://')| tr ' ' '\n'
+$ IW_ORDERS: echo 'link scan info' | tr ' ' '\n'
