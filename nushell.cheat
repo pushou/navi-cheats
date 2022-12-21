@@ -59,6 +59,9 @@ ss -tunlp|jc --ss|from json|sort-by -n local_port |where state == 'LISTEN'
 ss -tunlp|jc --ss|from json|sort-by -n local_port |where local_port_num < 1024
 ss -tunlp|jc --ss|from json|sort-by -n local_port |where ($it.local_port | into decimal) < 1024
 
+# Docker example
+docker ps -a --format "{{.ID}}|{{.Names}}|{{.State}}|{{.Ports}}" | lines | split column "|" ID Name State Ports | into df | sort-by [State Name] -r [true, false]
+
 # simple osquery to nushell
 osqueryi "select * FROM users;" --json|from json
 

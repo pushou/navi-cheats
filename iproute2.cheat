@@ -3,9 +3,16 @@
 ; everyday use
 # ip -color --brief a
 ip -c --brief a
+# ip -color --brief a short
+ip -c -br a show
 
+# ip -color --brief a short
+ip -c -br link show
 # ip link set  <PHY_NETWORK_INT> <UP_DOWN>
 sudo ip link set <PHY_NETWORK_INT> <UP_DOWN>
+
+# ip link show  <PHY_NETWORK_INT> 
+sudo ip link show <PHY_NETWORK_INT> 
 
 # ip address show dev <PHY_NETWORK_INT>
 ip  a sho dev <PHY_NETWORK_INT> 
@@ -21,6 +28,12 @@ sudo ip -4  route  list <NETWORK_OR_IPADDR>
 
 # get ip route local table
 ip route list table local type local
+
+# ip nei
+ip nei
+
+## ip nei with stats
+ip -s nei 
 
 # vlan
 ip link add link <PHY_NETWORK_INT> <vlan> type vlan id <vlanid>

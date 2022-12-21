@@ -24,6 +24,9 @@ ss -<IP_VERSION> --<PROTO> '( dport = <PORT> or sport = <PORT> )'
 # source port is greater than 5000
 ss -<IP_VERSION> --<PROTO> src <IP_ADDRESS> sport gt <PORT>
 
+# ss full with cgroups
+ss -neopa
+
 
 $ PROTO: echo 'tcp udp all' | tr ' ' '\n'
 $ IP_VERSION: echo '4 6' | tr ' ' '\n'
