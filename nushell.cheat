@@ -13,6 +13,9 @@ sys|select net|table -e
 # get cal
 cal --full-year 2023
 
+# get passwd
+open -r /etc/passwd|from csv  -n --separator ':'|rename users password uid gid gecos homedir shell
+
 # basic usage  with docker
 sudo docker info --format {{json .}} | from json|less
 
