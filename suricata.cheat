@@ -1,0 +1,16 @@
+%  ids ,suricata,pushou
+
+
+# add tgreen/hunting source
+suricata-update enable-source tgreen/hunting
+# update source
+suricata-update  update-sources
+# update
+suricata-update  
+
+
+### docker style (TPOT)
+docker exec -it $(docker ps|grep suricata|awk '{print $1}') sh -c "suricata-update enable-source tgreen/hunting"
+docker exec -it $(docker ps|grep suricata|awk '{print $1}') sh -c "suricata-update update-sources"
+docker exec -it $(docker ps|grep suricata|awk '{print $1}') sh -c "suricata-update"
+
