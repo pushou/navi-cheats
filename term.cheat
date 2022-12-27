@@ -1,0 +1,4 @@
+%  term, alacritty,pushou
+
+# term unknown
+curl -sSL https://raw.githubusercontent.com/alacritty/alacritty/master/extra/alacritty.info | tic -x -
