@@ -1,0 +1,48 @@
+% bgp,cisco,pushou
+
+# bgp cisco loopback
+router bgp 300
+ bgp log-neighbor-changes
+ neighbor 4.4.4.4 remote-as 100
+ neighbor 4.4.4.4 ebgp-multihop 2
+ neighbor 4.4.4.4 update-source Loopback1
+!
+address-family ipv4 # ipv6 
+  neighbor 4.4.4.4 activate # activation explicite du protocole
+  no auto-summary
+  no synchronization
+exit-address-family
+
+# debug bgp running
+sh run | section bgp  
+sh run | s bgp
+
+# show ip bgp
+show ip bgp
+show ip bgp neighbor
+show ip bgp neighbors | include BGP
+
+# liste les réseaux reçus du voisin
+neighbor 5.5.5.5 soft-reconfiguration inbound"
+sh ip bgp neighbors 1.1.1.1 received-routes
+
+# liste les réseaux réellement appris du voisin
+sh ip bgp neighbors 1.1.1.1 routes
+
+# liste les réseaux annoncés au voisin
+sh ip bgp neighbors 1.1.1.1 advertised-routes
+
+ # hard reset ne pas faire en prod 
+ clear ip bgp *
+
+ # soft reset avec l'adresse du voisin
+ clear ip bgp 192.168.100.1 soft in|out
+
+ debug ip tcp transactions
+ debug ip bgp
+ debug ip packet
+ u all # pour arrêter
+ ```
+
+ ```ios
+# show ip bgp ipv4 unicast summary 

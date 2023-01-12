@@ -20,11 +20,16 @@ router ospf 1
  network 0.0.0.0 255.255.255.255 area 0
 
 # ospf cisco per interface loopback
-interface loopback 2
-   ip router ospf 1
-      ip network 0.0.0.0 255.255.255.255 area 0
-      ip passive-interface fastEthernet 0/0
 
+interface Loopback3
+ ip address 3.3.3.3 255.255.255.255
+ ip ospf network point-to-point
+ ip ospf 1 area 0
+!
+router ospf 1
+ log-adjacency-changes
+ network 3.3.3.3 0.0.0.0 area 0
+ network 35.0.0.0 0.0.0.3 area 0
 
 # ospf cisco point to point
 interface gigabitEthernet 2/0
