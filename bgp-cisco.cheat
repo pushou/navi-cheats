@@ -3,15 +3,17 @@
 # bgp cisco loopback
 router bgp 300
  bgp log-neighbor-changes
- neighbor 4.4.4.4 remote-as 100
- neighbor 4.4.4.4 ebgp-multihop 2
- neighbor 4.4.4.4 update-source Loopback1
-!
-address-family ipv4 # ipv6 
-  neighbor 4.4.4.4 activate # activation explicite du protocole
+ neighbor 5.5.5.5 remote-as 200
+ neighbor 5.5.5.5 ebgp-multihop 2
+ neighbor 5.5.5.5 update-source Loopback3
+ !
+ address-family ipv4
+  neighbor 5.5.5.5 activate
   no auto-summary
   no synchronization
-exit-address-family
+  network 3.3.3.3 mask 255.255.255.255
+ exit-address-family
+!
 
 # debug bgp running
 sh run | section bgp  
