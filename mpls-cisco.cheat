@@ -1,32 +1,18 @@
 % mpls,cisco,pushou
 
-# eigrp cisco
-router eigrp 10
-   eigrp router-id 1.1.1.1
-   network 0.0.0.0 255.255.255.255
-   default-metric 100000 100 255 1 1500
 
-# vfr cisco 
-ip vrf custA
-   # route ditinguisher ASN:NUMBER
-   rd 65001:100
-interface f0/0
-   ip vrf forwarding custA
-   ip address 192.168.1.1 255.255.255.0
-
-
-# conf mpls
-  interface FastEthernet 0/0
-      mpls ip
-      cdp enable
-  mpls ldp router-id loopback1 force
-
-
-# show 
+# debug mpls vrf interface
 sh ip vrf interfaces
+# afficher la config mpls
 sh run mpls
 sh run | include mpls ldp router-id
+# table des labels
 sh mpls forwarding-table
+# interfaces mpls
 sh mpls interfaces
+# neighbor ldp
 sh mpls ldp neighbor
+# ldp discovery
 sh mpls ldp discovery
+
+
