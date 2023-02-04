@@ -51,6 +51,18 @@ systemctl list-unit-files --type=service -o json|from json
 # journalctl  json output
 journalctl -u ssh.service -o json-pretty|jq -s '.'|from json|select MESSAGE
 
+# journalctl sensor message
+journalctl -b -o json |jq -s '.'|from json| default 'nosyslog'  SYSLOG_IDENTIFIER |where SYSLOG_IDENTIFIER == 'sensors'| update __MONOTONIC_TIMESTAMP {|it| $it.__MONOTONIC_TIMESTAMP
+|into datetime -o +4|date format 'Le %d/%m/%Y à %H:%M'} |  default 'nomess' MESSAGE| select  __MONOTONIC_TIMESTAMP  MESSAGE
+
+# journalctl sensor message (jq select)
+journalctl -b -o json |jq '. | select(._COMM=="sensors")'  |jq -s '.'|from json| default 'nosyslog'  SYSLOG_IDENTIFIER | update __MONOTONIC_TIMESTAMP {|it| $it.__MONOTONIC_TIMESTAMP
+|into datetime -o +4|date format 'Le %d/%m/%Y à %H:%M'} |  default 'nomess' MESSAGE| select  __MONOTONIC_TIMESTAMP  MESSAGE
+
+# journalctl ufw block top IP address
+journalctl -k |grep 'BLOCK'|detect columns -n|select column9 column10|insert SRC {|it| $it.column9|str replace 'SRC=' ''}|insert DST {|it| $it.column10|str replace 'DS
+T=' ''}|reject  column9  column10|uniq -c|flatten|sort-by -r count
+
 # mtr from json
 mtr  -P 443 -T -c 2  -b -e -z -t -j  <FQDN> | from json|flatten|get hubs|flatten
 

@@ -13,6 +13,13 @@ hostnamectl set-hostname hostname
 # hostnamectl full-option
 hostnamectl <HOSTNAMECTL_ORDERS>
 
+# journalctl grep VALUE 
+journalctl --grep "UFW BLOCK"
+
+# journalctl netfilter
+journalctl -k | grep "IN=.*OUT=.*" | less
+journalctl -k | grep "UFW BLOCK" | less
+
 # numactl
 
 $ HOSTNAMECTL_ORDERS: echo 'status hostname icon-name chassis deployment location' | tr ' ' '\n'
