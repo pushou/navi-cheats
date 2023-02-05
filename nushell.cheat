@@ -58,7 +58,7 @@ journalctl -b -o json |jq -s '.'|from json| default 'nosyslog'  SYSLOG_IDENTIFIE
 journalctl -b -o json |jq '. | select(._COMM=="sensors")'  |jq -s '.'|from json| default 'nosyslog'  SYSLOG_IDENTIFIER | update __MONOTONIC_TIMESTAMP {|it| $it.__MONOTONIC_TIMESTAMP |into datetime -o +4|date format 'Le %d/%m/%Y à %H:%M'} |  default 'nomess' MESSAGE| select  __MONOTONIC_TIMESTAMP  MESSAGE
 
 # journalctl ufw block top IP address
-journalctl -k |grep 'BLOCK'|detect columns -n|select column9 column10|insert SRC {|it| $it.column9|str replace 'SRC=' ''}|insert DST {|it| $it.column10|str replace 'DST=' ''}|reject  column9  column10|uniq -c|flatten|sort-by -r count
+journalctl -k |grep 'BLOCK'|detect columns -n|select column9 column10 column16 column18|insert SRC {|it| $it.column9|str replace 'SRC=' ''}|insert DST {|it| $it.column10|str replace 'DST=' ''}|default "nodport" column18|insert DPORT {|it| $it.column18|str replace 'DPT=' ''}| insert PROTO  {|it| $it.column16|str replace 'PROTO=' ''} |reject  column9  column10 column16 column18|uniq -c|flatten|sort-by -r count|head -n 50
 
 # mtr from json
 mtr  -P 443 -T -c 2  -b -e -z -t -j  <FQDN> | from json|flatten|get hubs|flatten
