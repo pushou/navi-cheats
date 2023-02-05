@@ -14,7 +14,7 @@ hostnamectl set-hostname hostname
 hostnamectl <HOSTNAMECTL_ORDERS>
 
 # journalctl grep VALUE 
-journalctl --grep "UFW BLOCK"
+journalctl -k --grep "UFW BLOCK"
 
 # journalctl netfilter
 journalctl -k | grep "IN=.*OUT=.*" | less
