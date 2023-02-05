@@ -17,5 +17,19 @@ qemu-system-x86_64
 -accel hvf \
 -cpu Penryn,vendor=GenuineIntel
 
-
+# creat windows vm Linux
+virt-install \
+--name Windows_11 \
+--ram 8096 \
+--disk path=/var/lib/libvirt/images/Windows_11.img,size=60 \
+--cpu host-passthrough \
+--vcpus=4 \
+--os-variant=win10 \
+--network bridge=virbr0 \
+--graphics vnc,listen=0.0.0.0,password=password \
+--video virtio \
+--cdrom /home/pouchou/quickemu/windows-11/Win11_22H2_French_x64v1.iso \
+--features kvm_hidden=on,smm=on \
+--tpm backend.type=emulator,backend.version=2.0,model=tpm-tis \
+--boot loader=/usr/share/OVMF/OVMF_CODE.secboot.fd,loader_ro=yes,loader_type=pflash,nvram_template=/usr/share/OVMF/OVMF_VARS.ms.fd
 
