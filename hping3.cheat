@@ -1,7 +1,7 @@
 %  network,ping,pushou
 
 # hping MTU 
-sudo hping3  -H -<IP_VERSION> --<TYPE_PACKET> --dontfrag --data <PACKET_SIZE> <IP_ADDRESS>
+sudo hping3  -H <IP_VERSION> --<TYPE_PACKET> --dontfrag --data <PACKET_SIZE> <IP_ADDRESS>
 
 # ping MTU
 ping -M <FLAG_PING_FRAG> -s <PACKET_SIZE>  -<IP_VERSION>  <IP_ADDRESS>
