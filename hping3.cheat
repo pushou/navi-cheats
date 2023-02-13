@@ -1,4 +1,4 @@
-%  network,hping3,pushou
+%  network,ping,pushou
 
 # hping MTU 
 sudo hping3  -H -<IP_VERSION> --<TYPE_PACKET> --dontfrag --data <PACKET_SIZE> <IP_ADDRESS>
