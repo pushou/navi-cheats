@@ -3,11 +3,13 @@
 # hping MTU 
 sudo hping3  -H -<IP_VERSION> --<TYPE_PACKET> --dontfrag --data <PACKET_SIZE> <IP_ADDRESS>
 
-
+# ping MTU
+ping -M <FLAG_PING_FRAG> -s <PACKET_SIZE>  -<IP_VERSION>  <IP_ADDRESS>
 
 $ PROTO: echo 'tcp udp all' | tr ' ' '\n'
 $ IP_VERSION: echo '4 6' | tr ' ' '\n'
 $ TYPE_PACKET: echo ' icmp rawip udp tcp' | tr ' ' '\n'
+$ FLAG_PING_FRAG: echo 'dont do want' | tr ' ' '\n'
 $ PACKET_SIZE: echo '1472 9000' | tr ' ' '\n'
 $ PORT: echo {1..65535} | tr ' ' '\n'
 $ TO_PORT: echo {1..65535} | tr ' ' '\n'
