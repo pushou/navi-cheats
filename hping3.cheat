@@ -1,0 +1,13 @@
+%  network,hping3,pushou
+
+# hping MTU 
+sudo hping3  -H -<IP_VERSION> --<TYPE_PACKET> --dontfrag --data <PACKET_SIZE> <IP_ADDRESS>
+
+
+
+$ PROTO: echo 'tcp udp all' | tr ' ' '\n'
+$ IP_VERSION: echo '4 6' | tr ' ' '\n'
+$ TYPE_PACKET: echo ' icmp rawip udp tcp' | tr ' ' '\n'
+$ PACKET_SIZE: echo '1472 9000' | tr ' ' '\n'
+$ PORT: echo {1..65535} | tr ' ' '\n'
+$ TO_PORT: echo {1..65535} | tr ' ' '\n'
