@@ -1,0 +1,5 @@
+% vpn, wireguard pushou
+
+# debug wireguard
+echo module wireguard +p > /sys/kernel/debug/dynamic_debug/control
+journalctl -kf
