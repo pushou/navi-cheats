@@ -1,0 +1,43 @@
+%  network,route,pushou
+
+# debian add route 
+cat << EOF > /tmp/routesonde
+!/bin/sh
+if [ "$IFACE" = "eth0" ]; then
+   ip route add  172.16.0.0/28 via 10.255.255.135 dev eth0
+fi
+EOF
+
+
+# netplan config with route
+
+cat << EOF > /etc/netplan/00-installer-config.yaml
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    ens18:
+      addresses:
+         - 10.255.255.207/16
+      routes:
+         - to: default
+           via: 10.255.255.254
+         - to: 172.16.0.0/28
+           via: 10.255.255.135
+      nameservers:
+        addresses:
+        - 1.1.1.1
+        search:
+        - pushou.fr
+EOF
+
+$ PROTO: echo 'tcp udp all' | tr ' ' '\n'
+$ IP_VERSION: echo '4 6' | tr ' ' '\n'
+$ AT_NT: echo 'at nt' | tr ' ' '\n'
+$ TCP_FILTER: echo 'established syn-sent syn-recv fin-wait-1 fin-wait-2 time-wait closed close-wait last-ack closing synchronized'| tr ' ' '\n'
+$ SD_PORT: echo 'sport dport'| tr ' ' '\n'
+$ NNPORT :  cat /etc/services | awk '{print ":"$1}' | egrep -v '^:#'| tr ' ' '\n'
+$ START_PORT: echo {1..65535} | tr ' ' '\n'
+$ END_PORT: echo {1..65535} | tr ' ' '\n'
+$ PORT: echo {1..65535} | tr ' ' '\n'
+$ TO_PORT: echo {1..65535} | tr ' ' '\n'

@@ -1,0 +1,9 @@
+%  network,route,pushou
+
+# comment bash
+<< COMMENT1
+ this is a COMMENT1
+ bla..
+COMMENT1
+
+$ IP_VERSION: echo '4 6' | tr ' ' '\n'
