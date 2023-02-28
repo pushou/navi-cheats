@@ -100,6 +100,35 @@ sudo ip monitor <OBJECTS>
 # ip monitor ${event type} file ${path to the log file}
 sudo rtmon -family <FAMILY> <RTMON_ORDER> file '/tmp/rtmon.log'
 
+# list linux routing table
+ip rule
+
+# list linux table 
+ip route show table <POLICY_ROUTING_TABLE> type <POLICY_ROUTING_RULE>
+
+# create persistent custom policy routing table
+echo <ID_TABLE> <table_name> >> /etc/iproute2/rt_tables
+
+# create non persistent policy routing rule
+ip rule add from <ip_source_address> lookup <EXISTENT_TABLE_NAME>
+
+# add a default route to a table
+ip route add default via <next_hop> dev <PHY_NETWORK_INT> table  <EXISTENT_TABLE_NAME> 
+
+# policy routing full example (vpn)
+echo 1 vpn1 >> /etc/ip route2/rt_tables
+echo 2 vpn2 >> /etc/ip route2/rt_tables
+ip route add default dev tun0 table vpn1
+ip route add default dev tun2 table vpn2
+iptables -A PREROUTING -t mangle -i eth0 -p tcp --dport 22 -j MARK --set-mark 1
+iptables -A PREROUTING -t mangle -i eth0 -p tcp --dport 80 -j MARK --set-mark 2
+ip rule add from all fwmark 1 table vpn1
+ip rule add from all fwmark 2 table vpn2
+
+$ EXISTENT_TABLE_NAME: echo $(cat /etc/iproute2/rt_tables|grep -v '#'| awk '{print $2}') | tr ' ' '\n'
+$ ID_TABLE : echo {1..255} | tr ' ' '\n'
+$ POLICY_ROUTING_TABLE: echo 'local main default all' | tr ' ' '\n' 
+$ POLICY_ROUTING_RULE: echo 'local nat broadcast' | tr ' ' '\n'
 $ IP_VERSION: echo '4 6' | tr ' ' '\n'
 $ UP_DOWN: echo 'up down' | tr ' ' '\n'
 $ OBJECTS: echo $(ip --help 2>&1| awk '/OBJECT/ {print $0}'|awk -F:'|' '{print $3}'|sed 's/[|,=,{,},OPTIONS]//g')| tr ' ' '\n'
