@@ -125,6 +125,10 @@ iptables -A PREROUTING -t mangle -i eth0 -p tcp --dport 80 -j MARK --set-mark 2
 ip rule add from all fwmark 1 table vpn1
 ip rule add from all fwmark 2 table vpn2
 
+
+# ip route to a blackhole
+sudo ip route del blackhole 8.8.8.8
+
 $ EXISTENT_TABLE_NAME: echo $(cat /etc/iproute2/rt_tables|grep -v '#'| awk '{print $2}') | tr ' ' '\n'
 $ ID_TABLE : echo {1..255} | tr ' ' '\n'
 $ POLICY_ROUTING_TABLE: echo 'local main default all' | tr ' ' '\n' 
