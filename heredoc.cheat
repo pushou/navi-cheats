@@ -1,0 +1,38 @@
+%  bash,heredoc,pushou from https://linuxize.com/post/bash-heredoc/
+
+# heredoc simple expand
+cat << EOF
+The current working directory is: $PWD
+You are logged in as: $(whoami)
+EOF
+
+# heredoc do not expand parameter
+cat << "EOF"
+The current working directory is: $PWD
+You are logged in as: $(whoami)
+EOF
+
+# heredoc keep indent safe
+cat <<- "EOF"
+  The current working directory is: $PWD
+  You are logged in as: $(whoami)
+EOF
+
+# heredoc redirect to a file
+cat << EOF > /tmp/file.txt
+The current working directory is: $PWD
+You are logged in as: $(whoami)
+EOF
+
+# heredoc sed
+cat <<'EOF' |  sed 's/l/e/g'
+Hello
+World
+EOF
+
+# heredoc ssh
+ssh -T user@host.com << EOF
+echo "The current local working directory is: $PWD"
+echo "The current remote working directory is: \$PWD"
+EOF
+
