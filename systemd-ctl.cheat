@@ -20,8 +20,23 @@ journalctl -k --grep "UFW BLOCK"
 journalctl -k | grep "IN=.*OUT=.*" | less
 journalctl -k | grep "UFW BLOCK" | less
 
-# numactl
+# journalctl kernel log
+journalctl -kf
 
+# timedatectl ntp
+timedatectl set-ntp true
+
+# timedatectl status
+timedatectl status
+
+# systemctl insactive failed
+systemctl list-units -all --state=<STATE>
+
+# test if unit service
+systemctl is-active --quiet wazuh-agent || systemctl start wazuh-agent
+
+
+$ STATE: echo 'active inactive failed' | tr ' ' '\n'
 $ HOSTNAMECTL_ORDERS: echo 'status hostname icon-name chassis deployment location' | tr ' ' '\n'
 $ NETWORKCTL_ORDERS: echo 'status list lldp label delete up down reload renew forcerenew reconfigure' | tr ' ' '\n'
 $ LIST_CTL: echo 'bluetoothctl bootctl grdctl localectl oomctl pactl snapctl swtpm_ioctl udisksctl boltctl busctl hostnamectl obexctl powerprofilesctl resolvectl switcherooctl timedatectl' | tr ' ' '\n'
