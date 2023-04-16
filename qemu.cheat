@@ -17,7 +17,7 @@ qemu-system-x86_64
 -accel hvf \
 -cpu Penryn,vendor=GenuineIntel
 
-# creat windows vm Linux
+# create windows vm Linux
 virt-install \
 --name Windows_11 \
 --ram 8096 \
@@ -33,3 +33,8 @@ virt-install \
 --tpm backend.type=emulator,backend.version=2.0,model=tpm-tis \
 --boot loader=/usr/share/OVMF/OVMF_CODE.secboot.fd,loader_ro=yes,loader_type=pflash,nvram_template=/usr/share/OVMF/OVMF_VARS.ms.fd
 
+# qemu convert vmdk to qcow2
+qemu-img convert -p -f vmdk -O qcow2 packer-debian-11-amd64-disk001.vmdk debian11-ova.qcow2
+
+# virt-sparsify
+sudo virt-sparsify  debian11-ova.qcow2 --compress  debian11.qcow2
