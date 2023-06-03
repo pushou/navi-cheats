@@ -89,9 +89,6 @@ osqueryi "select * FROM users;" --json|from json
 # osquery to nushell
 osqueryi "select * FROM docker_images;" --json|from json|update size_bytes {|it| $it.size_bytes |into filesize} |sort-by  size_bytes
 
-# docker ps
-docker container ps -a | from ssv --aligned-columns | where IMAGE == "erikvl87/languagetool" |get "CONTAINER ID"
-
 # osquery docker image sum size
 osqueryi "select * FROM docker_images;" --json|from json|update size_bytes {|it| $it.size_bytes |into filesize} |sort-by  size_bytes|get size_bytes |reduce -n {|it, acc| $acc.item + $it.item }
 
