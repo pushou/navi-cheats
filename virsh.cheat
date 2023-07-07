@@ -9,6 +9,9 @@ virsh --connect qemu+ssh://<USERNAME>@<IP_ADDRESS>/system
 # Connect to a hypervisor session on a remote mac (user network => session)
 connect qemu+ssh://<USERNAME>@<IP_ADDRESS>/session?socket=/usr/local/var/run/libvirt/libvirt-sock
 
+# list interfaces
+virsh -c qemu:///system iface-list --all
+
 # List all domains
 virsh list --all
 
