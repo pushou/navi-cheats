@@ -2,3 +2,6 @@
 
 # create a socks proxy from our host to remot host then connect via curl to the socks proxy
 ssh -vv -fND 1080  <remote-user>@<remote_host> && curl --socks5 <remote_host>  ipinfo.io/ip|toilet --metal
+
+# tunnel to web server on remote host
+ssh -L 19999:localhost:19999 user@ip

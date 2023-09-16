@@ -1,7 +1,7 @@
 % virsh, pushou
 
-# Connect to a local hypervisor session
-virsh connect qemu:///system quemu
+# Connect to a local hypervisor 
+virsh -c qemu:///system list --all
 
 # Connect to a hypervisor session on a remote Linux
 virsh --connect qemu+ssh://<USERNAME>@<IP_ADDRESS>/system
