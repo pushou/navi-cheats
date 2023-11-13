@@ -23,6 +23,9 @@ journalctl -k | grep "UFW BLOCK" | less
 # journalctl kernel log
 journalctl -kf
 
+# journalctl full log for unbound
+journalctl --no-pager --full -u unbound
+
 # timedatectl ntp
 timedatectl set-ntp true
 

