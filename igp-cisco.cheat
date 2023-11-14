@@ -1,4 +1,11 @@
-% igp,cisco,pushou
+% igp,cisco,base,pushou
+
+# CTRL-C cisco
+CTRL SHIFT 6
+
+# disable domain lookup
+no ip domain-lookup
+
 
 # eigrp cisco
 conf t
