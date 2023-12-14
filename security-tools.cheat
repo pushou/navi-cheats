@@ -17,14 +17,6 @@ nrich /tmp/iplist.txt
 # shodan verify if limit api is overcharged
 curl https://internetdb.shodan.io|jq
 
-# bash history zeroize
-export HISTFILE=/dev/null 
-export HISTSIZE=0 
-export HISTFILESIZE=0  
-
-# env variable for a process
-cat /proc/PID/environ | tr '\0' '\n'  
 
 $ PROTO: echo 'tcp udp all' | tr ' ' '\n'
 $ IP_VERSION: echo '4 6' | tr ' ' '\n'
-$ AT_NT: echo 'at nt' | tr ' ' '\n'

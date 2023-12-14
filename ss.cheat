@@ -27,7 +27,7 @@ ss -<IP_VERSION> --<PROTO> src <IP_ADDRESS> sport gt <PORT>
 # ss full with cgroups
 ss -neopa
 
-# ss ebpf
+# ss get ebpf
 sudo ss -0bp
 
 
