@@ -1,0 +1,4 @@
+% cgroup , pushou
+ 
+# Computer Memory pressure 
+cat /sys/fs/cgroup/system.slice/memory.pressure
