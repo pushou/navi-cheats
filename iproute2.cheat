@@ -32,6 +32,9 @@ ip route list table local type local
 # ip nei
 ip nei
 
+## ip interface stat
+ip -s li
+
 ## ip nei with stats
 ip -s nei 
 

@@ -1,0 +1,4 @@
+% vim , pushou
+
+# vim default
+sudo update-alternatives --config editor

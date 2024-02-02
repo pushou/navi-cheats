@@ -3,6 +3,8 @@
 
 # Errors on physical interfaces
 sudo ethtool --statistics <PHY_NETWORK_INT> | rg -i -e 'dropped|error'
+# Errors on physical interfaces
+ethtool --statistics  <PHY_NETWORK_INT>  | grep errors
 
 $ PHY_NETWORK_INT: echo $(sudo ip link show|awk '{print $2}'|egrep '^en|^wl'|sed 's/://')| tr ' ' '\n'
 
