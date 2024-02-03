@@ -1,0 +1,77 @@
+%  gitlab,glab,pushou
+
+# glab install
+apt install makedeb
+wget -qO - 'https://proget.makedeb.org/debian-feeds/prebuilt-mpr.pub' | gpg --dearmor | sudo tee /usr/share/keyrings/prebuilt-mpr-archive-keyring.gpg 1> /dev/null
+echo "deb [arch=all,$(dpkg --print-architecture) signed-by=/usr/share/keyrings/prebuilt-mpr-archive-keyring.gpg] https://proget.makedeb.org prebuilt-mpr $(lsb_release -cs)" | sudo tee /etc/apt/sources.list.d/prebuilt-mpr.list
+sudo apt update
+git clone 'https://mpr.makedeb.org/glab'
+cd glab/
+makedeb -si
+glab config set --global editor vim
+source <(glab completion -s zsh); compdef _glab glab
+
+# glab confg 
+cat << EOF >  ~/.config/glab-cli/config.yml
+# Default GitLab hostname to use.
+# host: gitlab.domain.edu
+hosts:
+    gitlab.domain.edu:
+        token: glpat-change
+        api_host: gitlab.domain.edu
+        git_host: gitlab.domain.edu
+        git_protocol: https
+        api_protocol: https
+        user: pushou
+EOF
+
+# glab auth login from file
+glab auth login --hostname gitlab.domain.edu --stdin < ~/.dev/gitlabtoken.txt
+
+# glab auth status
+glab auth status
+
+# glab host selection
+export GITLAB_HOST=gitlab.domain.edu
+
+# glab update
+glab check-update
+
+# glab list ssh-hey
+glab list ssh-hey
+
+# glab clone
+glab repo clone https://gitlab.domain.eu/debianedu.git
+
+# glab create  repo
+glab repo create pushou/debianedu
+
+# glab create public repo
+glab repo create --public
+
+# glab repo list
+glab repo list
+
+# glab search repo
+glab repo search -s debian
+
+# glab delete repo
+glab repo delete pushou/debianedu
+
+# glab merge request
+glab mr create --source-branch migratebranch --target-branch main --title "pushou feature" --description "recup file"
+
+# glab list merge request
+glab mr list
+
+# glab approve merge request
+glab mr approve
+
+# glab merge request
+glab mr merge
+
+# glab destroy  merge request
+glab mr delete 1 
+
+# glab project view
+glab project view pushou/debianedu
