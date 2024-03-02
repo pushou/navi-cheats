@@ -14,3 +14,24 @@ docker exec -it $(docker ps|grep suricata|awk '{print $1}') sh -c "suricata-upda
 docker exec -it $(docker ps|grep suricata|awk '{print $1}') sh -c "suricata-update update-sources"
 docker exec -it $(docker ps|grep suricata|awk '{print $1}') sh -c "suricata-update"
 
+
+# colorize eve.json output
+tail -f eve.json | jq -c '.'
+
+# nx domain
+tail -f eve.json|jq -c 'select(.dns.rcode=="NXDOMAIN")'
+
+# unique http user agent
+cat eve.json | jq -s '[.[]|.http.http_user_agent]|group_by(.)|map({key:.[0],value:(.|length)})|from_entries'
+
+# alert 
+cat eve.json | jq -r -c 'select(.event_type=="alert")|.payload'|base64 --decode
+
+# top 10 port
+cat eve.json | jq -c 'select(.event_type=="flow")|[.proto, .dest_port]'|sort |uniq -c|sort -nr|head -n10
+
+# sum event_type
+head -5000 eve.json |jq -s '[.[]|select(.event_type)]'|from json| get event_type|uniq -c
+
+# bytes
+head -50000 eve.json |jq -s 'map(select(.event_type == "flow").flow.bytes_toclient)|add'|numfmt --to=iec

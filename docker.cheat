@@ -1,0 +1,14 @@
+% docker,pushou
+
+# listen to docker.sock with socat
+socat -d -v -d TCP-L:2375,fork UNIX:/var/run/docker.sock
+export DOCKER_HOST=localhost:2375 
+docker run ..
+
+# busybox debug
+docker cp ./busybox id_du_container:/
+docker exec -it 1edd81a917315bf /busybox ip a
+
+# nsenter
+docker inspect id-du-container|grep -i pid
+nsenter --target PID_trouvé_précedemment -p -u -n -i
