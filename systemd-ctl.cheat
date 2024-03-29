@@ -38,6 +38,11 @@ systemctl list-units -all --state=<STATE>
 # test if unit service
 systemctl is-active --quiet wazuh-agent || systemctl start wazuh-agent
 
+# loginctl list users
+loginctl list-users
+
+# enable linger (services for the user are not stopped by logout)
+loginctl enable-linger myuser
 
 $ STATE: echo 'active inactive failed' | tr ' ' '\n'
 $ HOSTNAMECTL_ORDERS: echo 'status hostname icon-name chassis deployment location' | tr ' ' '\n'
