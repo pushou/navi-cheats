@@ -44,8 +44,15 @@ grep "memfd_create" /proc/*/cmdline
 strings /proc/PID/cmdline 
 python3 -c "import os;os.fork()or(os.setsid(),print(f'/proc/{os.getpid()}/fd/{os.memfd_create(str())}'),os.kill(os.getpid(),19))"
 
-# malicious modules not hiding
+# search malicious modules not hiding
 sudo cat /proc/modules | grep \(.*\)
+
+# search suspicious process with bracker  showing data 
+ps auxww | grep \\[ | awk '{print $2}' | xargs -I % sh -c 'echo PID: %; cat /proc/%/maps' 2> /dev/null 
+
+
+# search process with bracket with no parent trying to mimic kernel thread
+ps auxwf | grep "\["
 
 $ PROTO: echo 'tcp udp all' | tr ' ' '\n'
 $ IP_VERSION: echo '4 6' | tr ' ' '\n'
