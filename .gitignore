@@ -2,4 +2,5 @@
 *.text
 *.txt
 package.json
+*.bad
 
