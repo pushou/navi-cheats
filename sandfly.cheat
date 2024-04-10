@@ -47,10 +47,6 @@ python3 -c "import os;os.fork()or(os.setsid(),print(f'/proc/{os.getpid()}/fd/{os
 # search malicious modules not hiding
 sudo cat /proc/modules | grep \(.*\)
 
-# search suspicious process with bracker  showing data 
-ps auxww | grep \\[ | awk '{print $2}' | xargs -I % sh -c 'echo PID: %; cat /proc/%/maps' 2> /dev/null 
-
-
 # search process with bracket with no parent trying to mimic kernel thread
 ps auxwf | grep "\["
 
