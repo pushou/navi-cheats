@@ -1,0 +1,5 @@
+%  vbox,pushou
+
+# dnat 2222 to a  vm that contains debian in its name 
+VBoxManage modifyvm $(VBoxManage list vms | grep "debian" | awk -F '"' '{print $2}') --natpf1 "ssh,tcp,127.0.0.1,2222,10.0.2.15,22"
+
