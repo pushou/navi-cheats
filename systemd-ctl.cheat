@@ -3,9 +3,8 @@
 # some *ctl program
 <LIST_CTL> 
 
-
-# Simple status
-networkctl <NETWORKCTL_ORDERS>
+# networkctl
+networkctl <NETWORKCTL_OPTIONS> <NETWORKCTL_ORDERS>
 
 # set hostname 
 hostnamectl set-hostname hostname 
@@ -47,4 +46,5 @@ loginctl enable-linger myuser
 $ STATE: echo 'active inactive failed' | tr ' ' '\n'
 $ HOSTNAMECTL_ORDERS: echo 'status hostname icon-name chassis deployment location' | tr ' ' '\n'
 $ NETWORKCTL_ORDERS: echo 'status list lldp label delete up down reload renew forcerenew reconfigure' | tr ' ' '\n'
+$ NETWORKCTL_OPTIONS: echo '-a -s -l -asl' | tr ' ' '\n'
 $ LIST_CTL: echo 'bluetoothctl bootctl grdctl localectl oomctl pactl snapctl swtpm_ioctl udisksctl boltctl busctl hostnamectl obexctl powerprofilesctl resolvectl switcherooctl timedatectl' | tr ' ' '\n'
