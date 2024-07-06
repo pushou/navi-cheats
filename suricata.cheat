@@ -35,3 +35,75 @@ head -5000 eve.json |jq -s '[.[]|select(.event_type)]'|from json| get event_type
 
 # bytes
 head -50000 eve.json |jq -s 'map(select(.event_type == "flow").flow.bytes_toclient)|add'|numfmt --to=iec
+
+# Quackbot jq
+
+sudo suricata -S "rules/*.rules" -l logs/ -k none -r 2023-02-27-Qakbot-infection-traffic.pcap ; 
+echo "Suricata event types:" ; jq -r .event_type logs/eve.json | sort | uniq -c |sort -rn ; 
+echo "Alerts:" ; grep '"event_type":"alert"' logs/eve.json | jq .alert.signature | sort -rn | uniq -c | sort -rn ; 
+echo "TLS SNIs:" ; jq 'select(.event_type=="tls")' logs/eve.json | jq .tls.sni | sort -rn | uniq -c | sort -rn ; 
+echo "TLS Versions:"; jq 'select(.event_type=="tls")' logs/eve.json | jq .tls.version | sort -rn | uniq -c | sort -rn; 
+echo "HTTP Hostnames:" ; jq 'select(.event_type=="http")' logs/eve.json | jq .http.hostname | sort -rn | uniq -c | sort -rn ; 
+echo "DNS Queries:" ; jq 'select(.event_type=="dns" )' logs/eve.json | jq .dns.rrname | sort -rn | uniq -c | sort -rn ; 
+echo "Filetransfer protocols:" ; jq 'select(.event_type=="fileinfo" )' logs/eve.json | jq .app_proto | sort -rn | uniq -c | sort -rn ; 
+echo "Filenames:" ; jq 'select(.event_type=="fileinfo")' logs/eve.json | jq .fileinfo.filename | sort -rn | uniq -c | sort -rn ; 
+echo "File magic:" ; jq 'select(.event_type=="fileinfo")' logs/eve.json | jq .fileinfo.magic | sort -rn | uniq -c | sort -rn ; 
+echo "Kerberos snames:" ; jq 'select(.event_type=="smb" and .smb.command=="SMB2_COMMAND_SESSION_SETUP" and .smb.status=="STATUS_SUCCESS" )' logs/eve.json | jq .smb.kerberos.snames[1] | uniq -c | sort -rn ; 
+echo "Kerberos realm:" ; jq 'select(.event_type=="smb" and .smb.command=="SMB2_COMMAND_SESSION_SETUP" and .smb.status=="STATUS_SUCCESS" )'  logs/eve.json | jq .smb.kerberos.realm | uniq -c | sort -rn ; 
+echo "SMB hostnames:" ; jq 'select(.event_type=="smb" and .smb.command=="SMB1_COMMAND_SESSION_SETUP_ANDX" and .smb.status=="STATUS_SUCCESS" and .smb.ntlmssp )' logs/eve.json | jq .smb.ntlmssp.host | uniq -c | sort -rn ; 
+echo "SMB ntlmssp version:" ; jq 'select(.event_type=="smb" and .smb.command=="SMB1_COMMAND_SESSION_SETUP_ANDX" and .smb.status=="STATUS_SUCCESS" and .smb.ntlmssp )' logs/eve.json | jq .smb.ntlmssp.version | uniq -c | sort -rn ; 
+echo "SMB native_lm:" ; jq 'select(.event_type=="smb" and .smb.command=="SMB1_COMMAND_SESSION_SETUP_ANDX" and .smb.status=="STATUS_SUCCESS" and .smb.ntlmssp )' logs/eve.json | jq .smb.response.native_lm | uniq -c | sort -rn ;
+
+# AgentTesla malware jq 
+sudo suricata -S "rules/*.rules" -l logs/ -k none -r 45527614-2f1d-4f74-b3bd-2dc42608beb4.pcap  
+echo "Suricata event types:"  jq -r .event_type logs/eve.json | sort | uniq -c |sort -rn  \ echo "Alerts:"  grep '"event_type":"alert"' logs/eve.json | jq .alert.signature | sort -rn | uniq -c | sort -rn  
+echo "TLS SNIs:"  jq 'select(.event_type=="tls")' logs/eve.json | jq .tls.sni | sort -rn | uniq -c | sort -rn  
+echo "TLS Versions:" jq 'select(.event_type=="tls")' logs/eve.json | jq .tls.version | sort -rn | uniq -c | sort -rn 
+echo "HTTP Hostnames:"  jq 'select(.event_type=="http")' logs/eve.json | jq .http.hostname | sort -rn | uniq -c | sort -rn  
+echo "DNS Queries:"  jq 'select(.event_type=="dns" )' logs/eve.json | jq .dns.rrname | sort -rn | uniq -c | sort -rn  
+echo "Filetransfer protocols:"  jq 'select(.event_type=="fileinfo" )' logs/eve.json | jq .app_proto | sort -rn | uniq -c | sort -rn  
+echo "Filenames:"  jq 'select(.event_type=="fileinfo")' logs/eve.json | jq .fileinfo.filename | sort -rn | uniq -c | sort -rn  
+echo "File magic:"  jq 'select(.event_type=="fileinfo")' logs/eve.json | jq .fileinfo.magic | sort -rn | uniq -c | sort -rn  
+echo "Mail from:"  jq 'select(.event_type=="smtp")' logs/eve.json | jq .email.from | sort -rn | uniq -c | sort -rn  
+echo "Mail to:"  jq 'select(.event_type=="smtp")' logs/eve.json | jq .email.to[] | sort -rn | uniq -c | sort -rn  
+echo "Mail helo:"  jq 'select(.event_type=="smtp")' logs/eve.json | jq .smtp.helo | sort -rn | uniq -c | sort -rn 
+
+# generate eve.json from pcap
+sudo /usr/local/bin/suricata -c /usr/local/etc/suricata/suricata.yaml  -S /var/lib/suricata/rules/suricata.rules -r ./dump2read/pcap42.pcap -v
+sudo suricata   -S /var/lib/suricata/rules/suricata.rules -r ./dump2read/pcap42.pcap -v
+sudo suricata -S "rules/*.rules" -l logs/ -k none -r 8562c91f-3a62-4e9b-a932-202340761005.pcap  
+
+# read pcap with suricatash (readpcap.sh)
+suricatasc -c "pcap-file /home/selks-user/mypcaps/real.pcap /var/log/suricata"
+
+# update lists
+suricata-update list-sources
+suricata-update update-sources
+suricata-update enable-source oisf/trafficid
+suricata-update enable-source etnetera/aggressive
+suricata-update enable-source sslbl/ssl-fp-blacklist
+suricata-update enable-source et/open
+suricata-update enable-source tgreen/hunting
+suricata-update enable-source sslbl/ja3-fingerprints
+suricata-update enable-source ptresearch/attackdetection
+suricata-update
+suricata-update list-enabled-sources
+
+# suricatac reload rules
+suricatasc -c reload-rules
+
+# pcap jq
+
+echo "Suricata event types:"  jq -r .event_type logs/eve.json | sort | uniq -c |sort -rn  
+echo "Alerts:"  grep '"event_type":"alert"' logs/eve.json | jq .alert.signature | sort -rn | uniq -c | sort -rn  
+echo "TLS SNIs:"  jq 'select(.event_type=="tls")' logs/eve.json | jq .tls.sni | sort -rn | uniq -c | sort -rn  
+echo "TLS Versions:" jq 'select(.event_type=="tls")' logs/eve.json | jq .tls.version | sort -rn | uniq -c | sort -rn 
+echo "HTTP Hostnames:"  jq 'select(.event_type=="http")' logs/eve.json | jq .http.hostname | sort -rn | uniq -c | sort -rn   
+echo "DNS Queries:"  jq 'select(.event_type=="dns" )' logs/eve.json | jq .dns.rrname | sort -rn | uniq -c | sort -rn  
+echo "Filetransfer protocols:"  jq 'select(.event_type=="fileinfo" )' logs/eve.json | jq .app_proto | sort -rn | uniq -c | sort -rn  
+echo "Filenames:"  jq 'select(.event_type=="fileinfo")' logs/eve.json | jq .fileinfo.filename | sort -rn | uniq -c | sort -rn  
+echo "File magic:"  jq 'select(.event_type=="fileinfo")' logs/eve.json | jq .fileinfo.magic | sort -rn | uniq -c | sort -rn   
+echo "FTP commands:"  jq 'select(.event_type=="ftp" and .ftp.command!=null)' logs/eve.json | jq .ftp.command | sort -rn | uniq -c | sort -rn   
+echo "FTP users:"  jq 'select(.event_type=="ftp" and .ftp.command=="USER")' logs/eve.json | jq .ftp.command_data | sort -rn | uniq -c | sort -rn   
+echo "FTP passwords:"  jq 'select(.event_type=="ftp" and .ftp.command=="PASS")' logs/eve.json | jq .ftp.command_data | sort -rn | uniq -c | sort -rn   
+echo "FTP files:"  jq 'select(.event_type=="ftp" and .ftp.command=="STOR")' logs/eve.json | jq .ftp.command_data | sort -rn | uniq -c | sort -rn
