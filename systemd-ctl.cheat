@@ -22,8 +22,25 @@ journalctl -k | grep "UFW BLOCK" | less
 # journalctl kernel log
 journalctl -kf
 
+# journalctl verbose
+journalctl -o verbose
+
+# journalctl list-boots
+journalctl  --list-boots  |from ssv -a
+
 # journalctl full log for unbound
 journalctl --no-pager --full -u unbound
+
+# journalctl clean
+journalctl --disk-usage
+journalctl --vacuum-time="2 days"
+journalctl --vacuum-size=4GB
+
+# journalctl emergency to errors
+journalctl -p emerg..err
+
+# journalctl json output to nushell
+journalctl  --list-boots  |from ssv -a
 
 # timedatectl ntp
 timedatectl set-ntp true
@@ -42,6 +59,15 @@ loginctl list-users
 
 # enable linger (services for the user are not stopped by logout)
 loginctl enable-linger myuser
+
+# systemd-run
+systemd-run  --unit stress-unit2    -p CPUQuota=50% -p MemoryLimit=512M -p OOMPolicy=continue /usr/bin/stress --cpu 4 --vm-bytes 8G
+
+# systemd-run interactive with accounting
+systemd-run -p IPAccounting=1 -t /bin/sh
+systemd-run -p IPAddressDeny=any -p IPAddressAllow=8.8.8.8 -p IPAddressAllow=127.0.0.0/8 -t /bin/sh
+systemd-run -p IPAccounting=yes -p IOAccounting=yes -p CPUAccounting=true -p MemoryAccounting=true -p TasksAccounting=true -p ProtectSystem=strict -p PrivateDevices=yes -t -S
+systemctl --no-pager  show ip-accounting  run-u282.service|grep IP
 
 $ STATE: echo 'active inactive failed' | tr ' ' '\n'
 $ HOSTNAMECTL_ORDERS: echo 'status hostname icon-name chassis deployment location' | tr ' ' '\n'

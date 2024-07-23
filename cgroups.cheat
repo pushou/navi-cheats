@@ -2,3 +2,11 @@
  
 # Computer Memory pressure 
 cat /sys/fs/cgroup/system.slice/memory.pressure
+
+# create a cgroup (cf iximiuz)
+
+cgcreate -g memory:/new-cgroup
+cgset -r memory.max="1000M" new-cgroup
+gexec -g memory:new-cgroup ~/app
+
+
