@@ -58,6 +58,9 @@ sh ip ospf database
 sh ip ospf interface loopback 2
 show ip ospf border-routers
 show ip ospf virtual-links
+show ip ospf data router 203.0.113.4
+show ip ospf data asbr-summary 203.0.113.4
+
 
 
 # ospf cisco complex describe
