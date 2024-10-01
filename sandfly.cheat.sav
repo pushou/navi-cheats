@@ -50,5 +50,12 @@ sudo cat /proc/modules | grep \(.*\)
 # search process with bracket with no parent trying to mimic kernel thread
 ps auxwf | grep "\["
 
+# do not fragment off
+route-map nodf permit 10
+set ip df 0
+interface FastEthernet2
+ip policy route-map nodf
+
+
 $ PROTO: echo 'tcp udp all' | tr ' ' '\n'
 $ IP_VERSION: echo '4 6' | tr ' ' '\n'
