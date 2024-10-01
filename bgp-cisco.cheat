@@ -39,3 +39,6 @@ debug ip bgp
 debug ip packet
 u all # pour arrêter
 
+# DF peer bgp  show if  Transport(tcp) path-mtu-discovery is enabled
+show ip bgp neigh 10.10.10.2 | in tcp
+
