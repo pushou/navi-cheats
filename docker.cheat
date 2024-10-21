@@ -12,3 +12,10 @@ docker exec -it 1edd81a917315bf /busybox ip a
 # nsenter
 docker inspect id-du-container|grep -i pid
 nsenter --target PID_trouvé_précedemment -p -u -n -i
+
+# docker plugin sbom
+docker sbom registry.iutbeziers.fr/debianiut
+
+# docker plugin scout
+docker scout cves registry.iutbeziers.fr/debianiut
+docker scout recommendations registry.iutbeziers.fr/debianiut:latest
