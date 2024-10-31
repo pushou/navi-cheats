@@ -1,4 +1,4 @@
-%  network,route,pushou
+%  bash ,pushou
 
 # comment bash
 << COMMENT1
@@ -42,5 +42,8 @@ cat <&5
 # ps
 ps -faux
 
+# pgrep list process name
+sudo pgrep -u tpot -l
+sudo pkill -HUP  -u tpot Suricata-Main
 
 $ IP_VERSION: echo '4 6' | tr ' ' '\n'
