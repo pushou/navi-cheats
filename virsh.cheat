@@ -24,6 +24,11 @@ virsh nodeinfo
 # pool list
 virsh pool-list --details
 
+# system socket
+export LIBVIRT_DEFAULT_URI=qemu:///system
+virsh list --all
+
+
 # volume delete from pool
 sudo virsh pool-list
 sudo virsh vol-list --pool default
