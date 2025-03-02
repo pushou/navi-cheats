@@ -1,0 +1,11 @@
+%  network,netlab,pushou
+
+# addresses and ip addressing
+netlab report addressing
+
+# capture traffic
+netlab capture s1  Ethernet1 -i any
+netlab capture  ceos1 Ethernet1 -i any proto ospf
+
+# exex command in 
+netlab exec  H1 /bin/bash -c 'ip a'
