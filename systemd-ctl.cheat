@@ -69,6 +69,9 @@ systemd-run -p IPAddressDeny=any -p IPAddressAllow=8.8.8.8 -p IPAddressAllow=127
 systemd-run -p IPAccounting=yes -p IOAccounting=yes -p CPUAccounting=true -p MemoryAccounting=true -p TasksAccounting=true -p ProtectSystem=strict -p PrivateDevices=yes -t -S
 systemctl --no-pager  show ip-accounting  run-u282.service|grep IP
 
+# systemd-detect-virt
+systemd-detect-virt
+
 $ STATE: echo 'active inactive failed' | tr ' ' '\n'
 $ HOSTNAMECTL_ORDERS: echo 'status hostname icon-name chassis deployment location' | tr ' ' '\n'
 $ NETWORKCTL_ORDERS: echo 'status list lldp label delete up down reload renew forcerenew reconfigure' | tr ' ' '\n'
