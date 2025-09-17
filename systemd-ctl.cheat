@@ -60,6 +60,9 @@ loginctl list-users
 # enable linger (services for the user are not stopped by logout)
 loginctl enable-linger myuser
 
+# disable poweroff 
+sudo systemctl mask poweroff.target
+
 # systemd-run
 systemd-run  --unit stress-unit2    -p CPUQuota=50% -p MemoryLimit=512M -p OOMPolicy=continue /usr/bin/stress --cpu 4 --vm-bytes 8G
 
