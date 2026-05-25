@@ -1,5 +1,0 @@
-% wireguard,vpn,network,vpn,category:network,pushou
-
-# debug wireguard
-echo module wireguard +p > /sys/kernel/debug/dynamic_debug/control
-journalctl -kf

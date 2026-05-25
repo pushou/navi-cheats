@@ -1,4 +1,0 @@
-% netfilter,firewall,security,netfilter,conntrack,category:security,pushou
-
-# get udp NEX conn 
-conntrack -E -o timestamp -p udp -e NEW

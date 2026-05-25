@@ -1,4 +1,0 @@
-% vim,editor,shell,category:shell,pushou
-
-# vim default
-sudo update-alternatives --config editor

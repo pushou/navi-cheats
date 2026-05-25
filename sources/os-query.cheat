@@ -1,8 +1,0 @@
-% osquery,os-info,system,os-information,category:system,pushou
-
-# install os-info on ubuntu
-sudo apt install  libosinfo-bin
-
-# List image 
-osinfo-query os
-osinfo-query os vendor="Fedora Project"

@@ -1,4 +1,0 @@
-% privileged-ports,security,sysctl,linux,category:security,pushou
-
-# permit access 80 <= port for unprivileged users
-sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80

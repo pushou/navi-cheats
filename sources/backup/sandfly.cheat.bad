@@ -1,2 +1,0 @@
-# search suspicious process with bracket showing data
-ps auxww | grep "\\[" | awk '{print $2}' | xargs -I % sh -c 'echo PID: %; cat /proc/%/maps' 2> /dev/null
