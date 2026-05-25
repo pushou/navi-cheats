@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(do *)",
+      "Bash(sort)",
+      "Bash(sort *)",
+      "Bash(comm *)",
+      "Bash(ls *)",
+      "Bash(xargs *)"
+    ]
+  },
+  "$version": 4
+}

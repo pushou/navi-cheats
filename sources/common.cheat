@@ -1,0 +1,15 @@
+% common,variables,shared,category:shell,pushou
+
+# Variables communes partagées entre les cheats.
+# Les variables dupliquées (PORT, IP_VERSION, PROTO, TCP_FILTER, etc.)
+# ont été supprimées car elles sont déjà définies dans les fichiers spécifiques.
+# Seules les variables uniques ou peu utilisées sont conservées ici.
+
+$ NNPORT2P:  cat /etc/services | awk '{print ":"$1}' | egrep -v '^:#'| tr ' ' '\n'
+$ IPSET_TYPE: echo 'hash:ip'
+$ IPSET: firewall-cmd --get-ipsets | tr ' ' '\n'
+$ PROTO_LETTER: echo 't u a'| tr ' ' '\n'
+
+# Pour inclure les variables communes dans un autre cheat, ajouter :
+# $(source /home/pouchou/Nextcloud/dev/wikiia/sources/common.cheat)
+# ou copier-coller les variables nécessaires.

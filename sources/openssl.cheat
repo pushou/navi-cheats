@@ -1,0 +1,5 @@
+% openssl,security,crypto,ssl,tls,category:security,pushou
+
+
+# STARTLS cypher list
+openssl s_client -connect smtp.umontpellier.fr:587 -starttls smtp

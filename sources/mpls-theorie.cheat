@@ -1,0 +1,184 @@
+% mpls,theorie,routing,cisco,category:networking-cisco,pushou
+
+
+; ============ CARACTÉRISTIQUES MPLS ============
+
+# MPLS = Multi-Protocol Label Switching
+# Technologie de couche entre 2 et 3 (couche 2.5)
+# Basée sur la labellisation : une étiquette est ajoutée au paquet
+# Permet le "Traffic Engineering" : partage de charge, QoS, VPN
+
+# Le réseau MPLS est opéré par une seule entité
+# Le SDN permet de piloter plusieurs fournisseurs et choisir le meilleur chemin
+
+
+; ============ EN-TÊTE MPLS ============
+
+# Structure de l'en-tête MPLS (20 bits) :
+# 012345678901234567890123456789
+# |-------LABEL---------|TC|S|TTL|
+#
+# LABEL  : 20 bits (entiers courts)
+# TC     : 3 bits (Traffic Class, utilisé pour la QoS)
+# S      : 1 bit (Stack — indique la fin de l'empilement)
+# TTL    : 8 bits (Time To Live)
+
+
+; ============ TYPES DE ROUTEURS MPLS ============
+
+# LER (Label Edge Router)
+# Points d'entrée (ingress) et de sortie (egress) du réseau MPLS
+# Ingress : le LER reçoit le paquet et détermine son étiquette (PUSH)
+# Egress  : le LER enlève les labels (POP)
+# Effectuent des opérations complexes
+
+# LSR (Label Switch Router) / transit node
+# Routeur commutateur de labels en transit
+# Chaque LSR possède une table de label propre
+# Assignent des labels à leurs FEC
+# Modifient l'étiquette (SWAP) : label d'entrée → nouveau label de sortie
+
+# Terminologie Cisco :
+# CE = Customer Edge (routeurs clients)
+# PE = Provider Edge (équivalent LER)
+# P  = Provider (équivalent LSR, transit uniquement)
+
+# Terminologie officielle :
+# CE → ingress LER → LSR → LSR → egress LER → CE
+
+
+; ============ FEC & LSP ============
+
+# FEC (Forwarding Equivalent Class) / Classe d'équivalence
+# Regroupe les paquets ayant les mêmes caractéristiques :
+#   - IP source ou destination
+#   - Réseau de destination
+#   - Ports, adresse source, etc. (pour QoS)
+# Souvent identifiée par le réseau de destination
+
+# Circuit Virtuel (VC)
+# Couples de labels sortants et rentrants pour chaque FEC
+# Matérialisent un chemin pour les paquets
+
+# LSP (Label Switching Path)
+# Chemin de commutation de label
+# Un LSP différent pour l'aller et le retour
+
+
+; ============ DYNAMIQUE DU SWITCHING MPLS ============
+
+# 1. Le paquet entre sur le réseau
+# 2. Le LER détermine la FEC et appose une étiquette (PUSH)
+# 3. Le LER transmet au LSR
+# 4. Le LSR modifie l'étiquette (SWAP)
+#    → Le Label de sortie devient label d'entrée
+#    → Un nouveau label de sortie est apposé
+# 5. Transmission de LER en LER avec plusieurs SWAP
+# 6. Le LSR de sortie dépile l'étiquette (POP)
+#    → Transmet le paquet IP contenu au réseau client
+
+# Un label a une signification locale
+# → On peut avoir un label apparaissant plusieurs fois
+
+
+; ============ LDP (Label Distribution Protocol) ============
+
+# LDP transporte les informations pour construire les tables de labels
+# Les LSR se découvrent via un IGP (OSPF, IS-IS)
+# Les labels sont assignés et échangés entre LSR adjacents
+
+
+; ============ VRF (Virtual Routing & Forwarding) ============
+
+# Un routeur physique gère plusieurs tables de routage (une par client)
+# Les VRF permettent à plusieurs clients d'utiliser le même plan d'adressage privé
+# → Pas de conflit (overlap) d'adresses privées entre clients
+
+# VRF lite : VRF sans MPLS
+# Utile sur réseaux petites à moyennes tailles
+
+# Chaque VRF a un Route Distinguisher (RD) unique
+# Format RD : AS:NuméroAssigné (ex: 65535:1)
+
+
+; ============ ROUTE DISTINGUISHER & ROUTE TARGET ============
+
+# Route Distinguisher (RD)
+# Unique par VRF
+# Format : AS:NuméroAssigné
+# Exemple : RD du VRF client_A = 65535:1
+# → Le préfixe 192.168.0.0 de client_A devient : 65535:1:192.168.0.0
+
+# Route Target (RT)
+# Information associée à un préfixe VRF lors de son export vers BGP
+# Peut être égal au RD ou différent
+# Utilisée pour filtrer les préfixes reçus en MP-BGP
+# → Détermine vers quelles VRF locales les préfixes doivent être importés
+# C'est une communauté BGP étendue (64 bits)
+# Un préfixe peut recevoir un ou plusieurs RT
+
+
+; ============ VPN MPLS ============
+
+# Niveaux :
+# Layer 2 : Pseudowire (PW)
+# Layer 3 : L3VPN
+
+# MP-BGP (MultiProtocol BGP)
+# Extension de BGP permettant la distribution de multiples familles d'adresses
+# Pour L3VPN : adresses VPN IPv4/v6 avec labels MPLS
+# Les routeurs MPLS communiquent en i-MP-BGP (interior MP-BGP)
+
+# PE et CE échangent via BGP, OSPF ou routes statiques
+# Les PE reçoivent des annonces de routes
+
+
+; ============ TRAFFIC ENGINEERING ============
+
+# Contraintes additionnelles sur le meilleur chemin :
+#   - Plus court chemin ET meilleure bande passante
+#   - Partage de charge
+
+# RSVP (Resource Reservation Protocol)
+# Réserve de la bande passante sur les chemins MPLS
+# Chaque LSP peut être associé à une réservation
+# "auto bandwidth" : calcul automatique de la réservation
+
+# MPLS Fast Reroute (FRR)
+# Améliore la convergence lors d'un incident
+# Pré-calcul des LSP de secours
+# Pré-implémente la FIB pour gagner du temps
+
+
+; ============ MPLS ET TRACEROUTE ============
+
+# Le TTL n'est PAS décrémenté lors de la traversée d'un routeur MPLS
+# → Problématique pour traceroute et diagnostic
+# Peut être implémenté explicitement pour faire du traceroute MPLS
+
+
+; ============ SÉCURITÉ MPLS ============
+
+# Sécurité basée sur :
+#   - Indépendance des flux (VRF)
+#   - Contrôle du fournisseur du réseau
+#
+# Limitations :
+#   - Pas de chiffrement dans MPLS
+#   - Le niveau de sécurité dépend du fournisseur
+
+
+; ============ TERMINOLOGIE ============
+
+# CE   = Customer Edge
+# PE   = Provider Edge (LER)
+# P    = Provider (LSR transit)
+# LER  = Label Edge Router
+# LSR  = Label Switch Router
+# FEC  = Forwarding Equivalent Class
+# LSP  = Label Switching Path
+# VC   = Virtual Circuit
+# RD   = Route Distinguisher
+# RT   = Route Target
+# LDP  = Label Distribution Protocol
+# RSVP = Resource Reservation Protocol

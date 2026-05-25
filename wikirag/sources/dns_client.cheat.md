@@ -1,0 +1,158 @@
+---
+nom: dns_client.cheat
+description: Cheatsheet navi de résolution DNS — resolvectl, dig, curl DoH, q
+type: source
+date_creation: 2026-05-25
+date_modification: 2026-05-25
+version: 1.0.0
+tags:
+  - dns
+  - dns-client
+  - resolvectl
+  - dig
+  - doh
+  - resolution
+  - network
+  - cheat-sheet
+  - navi
+sources: []
+---
+
+# Source : dns_client.cheat
+
+> Cheatsheet navi original de pushou, catégorisé `category:network`.
+
+## Description
+
+Fichier de cheatsheet navi contenant des commandes de résolution DNS sous plusieurs angles : `resolvectl` (systemd-resolved), `dig` (DNS classique), `curl` (DNS over HTTPS), et `q` (client DoH).
+
+## Métadonnées
+
+| Champ | Valeur |
+|-------|--------|
+| Fichier | `sources/dns_client.cheat` |
+| Auteur | pushou |
+| Tags | `dns, dns-client, resolvectl, client, dig, curl, q, category:network` |
+| Sections | 4 (resolvectl, dig, curl DoH, q) |
+| Type | Cheatsheet navi |
+
+## Pages wiki alimentées
+
+- [[entites/resolvectl.md]] — Page d'entité resolvectl
+- [[entites/dig.md]] — Page d'entité dig
+- [[concepts/resolution-dns.md]] — Concept de résolution DNS
+- [[concepts/dns-over-https.md]] — Concept DoH
+
+## Contenu brut
+
+```
+% dns,dns-client,resolvectl,category:network,pushou
+
+# Simple query
+resolvectl query registry.iutbeziers.fr
+
+# Reverse Query
+resolvectl query 194.199.227.220
+
+# Query MX SRV...
+resolvectl --legend=<LEGEND> -t <TYPE_ENREG>  query <DOMAIN_NAME>
+
+# Full query options
+resolvectl <RESOLVECTL_ORDERS>
+
+# Statistics
+resolvectl statistics
+
+# dns per interface
+resolvectl dns
+
+# Get status
+resolvectl status
+
+# Get domain
+resolvectl domain
+
+# Debug systemd-resolved
+sudo resolvectl log-level debug
+sudo journalctl -f -u systemd-resolved.service
+
+; default-route
+# Set  default-route state per physical interfaces
+resolvectl  default-route <PHY_NETWORK_INT> <TRUE_OR_FALSE>
+
+
+$ TYPE_ENREG: echo 'A SOA ANY CNAME TXT MX AAAA SRV' | tr ' ' '\n'
+$ LEGEND: echo 'yes no' | tr ' ' '\n'
+$ TRUE_OR_FALSE: echo 'true false' | tr ' ' '\n'
+$ PHY_NETWORK_INT: echo $(sudo ip link show|awk '{print $2}'|egrep '^en|^wl'|sed 's/://')| tr ' ' '\n'
+& RESOLVECTL_ORDERS: echo 'query service openpgp tlsa status statistics reset-statistics flush-caches  reset-server-features dns domain default-route llmnr
+  mdns dnsovertls dnssec nta revert log-level
+
+% dns, client, dig , pushou
+
+# Simple query
+dig <FQDN>
+
+# Reverse Query
+dig -x <IP_ADDRESS>
+
+# no recursion
+dig +norec @a.root-servers.net. <FQDN>
+
+# trace
+dig +trace <FQDN>
+
+# short
+dig +short fr. NS
+
+# focus on answer
+dig www.umontpellier.fr  +noall +answer
+
+# dig DNS over Https
+dig @8.8.8.8 +https www.google.fr
+
+# lookup from file query.txt
+dig -f query.txt +short
+
+# get all  record for a domain
+dig +noall +answer umontpellier.fr <TYPE_ENREG>
+
+
+# dig ipv6
+dig -6 @2001:4860:4860::8888 google.com A
+
+# cat dns.flags
+curl https://gist.githubusercontent.com/pushou/ba35386d3b6122fbe20467ce1ef1822e/raw/0fae3721ab91e003a94d7b7221cf7d31c69cf8f8/dns-flag.txt
+$ TYPE_ENREG: echo 'A SOA ANY CNAME TXT MX AAAA SRV' | tr ' ' '\n'
+
+% dns,client, curl , pushou
+# doh with curl dns-json
+curl -H 'accept: application/dns-json' 'https://cloudflare-dns.com/dns-query?name=<FQDN>&type=<TYPE_ENREG>' | jq .
+
+# doh with curl dns-message
+curl -H 'accept: application/dns-message' 'https://dns.google/dns-query?dns=q80BAAABAAAAAAAAA3d3dwdleGFtcGxlA2NvbQAAAQAB'  | hexdump -c
+
+
+;# doh curl (not working)
+;curl -v --doh-insecure  --doh-url https://cloudflare-dns.com/dns-query  https://github.com
+
+% dns, q , pushou
+# query q doh
+q A www.umontpellier.fr  @https://doh.dnswarden.com
+
+# query q doh verbose mode
+q -v A    www.umontpellier.fr  @https://cloudflare-dns.com/dns-query
+
+# query q multiple type queries
+q MX TXT umontpellier.fr
+
+# query q reverse
+q -x 194.199.227.80
+
+
+
+$ TYPE_ENREG: echo 'A SOA CNAME TXT ANY MX AAAA SRV' | tr ' ' '\n'
+$ LEGEND: echo 'yes no' | tr ' ' '\n'
+$ TRUE_OR_FALSE: echo 'true false' | tr ' ' '\n'
+$ PHY_NETWORK_INT: echo $(sudo ip link show|awk '{print $2}'|egrep '^en|^wl'|sed 's/://')| tr ' ' '\n'
+```

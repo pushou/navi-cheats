@@ -1,0 +1,207 @@
+% bgp,commandes,cisco,configuration,category:networking-cisco,pushou
+
+
+; ============ MTR (diagnostic BGP) ============
+
+# mtr avec affichage des AS et MPLS
+mtr --tcp --port 443 --show-ips --mpls --aslookup --curses www.umontpellier.fr
+
+# mtr simple avec IP
+mtr -P 443 -T -b -e -z -t 194.199.227.220
+
+# mtr JSON (nushell)
+mtr -P 443 -T -c 2 -b -e -z -t 194.199.227.220 | from json | flatten | get hubs | flatten
+
+# traceroute
+traceroute -A -n -e -i eth0 8.8.8.8
+
+
+; ============ CONFIGURATION BGP BASIQUE (Cisco) ============
+
+# BGP basique
+router bgp <ASN_LOCAL>
+   bgp log-neighbor-changes
+   no synchronization
+   bgp router-id <ROUTER_ID>
+
+# déclaration du voisin BGP et de son AS
+neighbor <IP_VOISIN> remote-as <ASN_VOISIN>
+
+# network permet de déclarer les réseaux à annoncer (contrairement à OSPF, pas lié à une interface)
+network <RESEAU> mask <MASQUE>
+
+# soft-reconfiguration pour accéder aux routes reçues d'un voisin
+neighbor <IP_VOISIN> soft-reconfiguration inbound
+
+$ ASN_LOCAL: echo '65100 65535 100 300 65000' | tr ' ' '\n'
+$ ROUTER_ID: echo '1.1.1.1 2.2.2.2 10.0.0.1 192.168.1.1' | tr ' ' '\n'
+$ IP_VOISIN: echo '10.12.1.1 1.1.1.1 5.5.5.5 192.168.27.2 35.0.0.1' | tr ' ' '\n'
+$ ASN_VOISIN: echo '65200 65531 65535 200 300 100' | tr ' ' '\n'
+$ RESEAU: echo '192.168.1.0 192.168.2.0 11.0.0.0 35.0.0.0 10.0.0.0' | tr ' ' '\n'
+$ MASQUE: echo '255.255.255.0 255.255.255.255 255.255.252.0' | tr ' ' '\n'
+
+
+; ============ BGP AVEC LOOPBACK ============
+
+# Créer une loopback
+interface Loopback2
+ ip address <LOOPBACK_IP> 255.255.255.255
+
+# Redistribuer les routes internes
+bgp redistribute-internal
+
+neighbor <LOOPBACK_VOISIN> remote-as <ASN_VOISIN>
+
+# eBGP avec multihop (TTL > 1)
+neighbor <LOOPBACK_VOISIN> disable-connected-check
+neighbor <LOOPBACK_VOISIN> ebgp-multihop <TTL>
+
+# Utiliser la loopback comme source des sessions BGP
+neighbor <LOOPBACK_VOISIN> update-source Loopback2
+
+# iBGP next-hop-self
+neighbor <IP_IBGP> next-hop-self
+
+# Route statique vers le voisin (nécessaire pour atteindre la loopback)
+ip route <IP_VOISIN> 255.255.255.255 <GATEWAY_LOCAL>
+
+$ LOOPBACK_IP: echo '2.2.2.2 3.3.3.3 4.4.4.4 1.1.1.1' | tr ' ' '\n'
+$ LOOPBACK_VOISIN: echo '1.1.1.1 5.5.5.5' | tr ' ' '\n'
+$ TTL: echo '2 3' | tr ' ' '\n'
+$ IBGP: echo '5.5.5.5 10.10.10.2' | tr ' ' '\n'
+$ GATEWAY_LOCAL: echo '11.0.0.100 10.0.0.1' | tr ' ' '\n'
+
+
+; ============ CONFIGURATION BGP AVANCÉE ============
+
+# Désactiver le IPv4 par défaut (voisins IPv4 inactifs par défaut avec cette commande)
+no bgp default ipv4-unicast
+
+# Configuration OSPF pour les voisins BGP (loopback-to-loopback)
+router ospf <OSPF_ID>
+ log-adjacency-changes
+ passive-interface <INTERFACE_PASSIVE>
+ network <RES_OSPF> <WILDCARD> area <AREA>
+
+# Address-family (activation explicite des voisins)
+router bgp <ASN>
+ address-family ipv4
+  neighbor <IP_VOISIN> activate
+  neighbor <IP_VOISIN> soft-reconfiguration inbound
+  no auto-summary
+  no synchronization
+  network <RESEAU> mask <MASQUE>
+ exit-address-family
+
+$ OSPF_ID: echo '1 10 100' | tr ' ' '\n'
+$ INTERFACE_PASSIVE: echo 'FastEthernet0/1 GigabitEthernet0/0.10' | tr ' ' '\n'
+$ RES_OSPF: echo '3.3.3.3 10.0.23.0 172.16.0.0' | tr ' ' '\n'
+$ WILDCARD: echo '0.0.0.0 0.0.0.255 0.0.0.3' | tr ' ' '\n'
+$ AREA: echo '0 0.0.0.0' | tr ' ' '\n'
+
+
+; ============ AGRÉGATION DE ROUTES ============
+
+# Résumé uniquement (sans conserver les attributs)
+aggregate address <RESEAU_AGGR> <MASQUE_AGGR> summary-only
+
+# Résumé en conservant les AS_PATH et communities
+aggregate address <RESEAU_AGGR> <MASQUE_AGGR> as-set summary-only
+
+$ RESEAU_AGGR: echo '192.168.0.0 10.202.0.0 172.16.0.0' | tr ' ' '\n'
+$ MASQUE_AGGR: echo '255.255.0.0 255.255.252.0 255.255.240.0' | tr ' ' '\n'
+
+
+; ============ INJECTION ROUTE PAR DÉFAUT ============
+
+# Méthode 1 : network + route null0 (la route null0 n'est jamais sélectionnée)
+router bgp <ASN>
+   network 0.0.0.0
+
+ip route 0.0.0.0 0.0.0.0 null0
+
+# Méthode 2 : default-information originate (injecte dans toute la BGP)
+router bgp <ASN>
+   default-information originate
+
+# Méthode 3 : default-information originate vers un voisin spécifique
+router bgp <ASN>
+   neighbor <VOISIN> default-information originate
+
+$ VOISIN: echo '5.5.5.5 10.12.1.1 192.168.1.1' | tr ' ' '\n'
+
+
+; ============ ROUTE REFLECTOR ============
+
+# Configuration du Route Reflector
+router bgp <ASN>
+   neighbor <RR_IP> remote-as <ASN>
+   neighbor <RR_IP> route-reflector-client
+
+# Configuration du client du Route Reflector
+router bgp <ASN>
+   neighbor <RR_IP> remote-as <ASN>
+
+$ RR_IP: echo '192.168.27.2 192.168.27.7' | tr ' ' '\n'
+
+
+; ============ COMMANDES DE DEBUG / VERIFICATION ============
+
+# running config
+sh run | section bgp
+sh run | s bgp
+
+# show ip bgp
+show ip bgp
+show ip bgp neighbor
+show ip bgp neighbors | include BGP
+
+# réseaux reçus du voisin (nécessite soft-reconfiguration inbound)
+sh ip bgp neighbors <VOISIN> received-routes
+
+# réseaux réellement appris du voisin
+sh ip bgp neighbors <VOISIN> routes
+
+# réseaux annoncés au voisin
+sh ip bgp neighbors <VOISIN> advertised-routes
+
+# préfixe le plus long
+show ip bgp longer-prefixes
+
+# soft reset (pas de rupture de session)
+clear ip bgp <VOISIN> soft in
+clear ip bgp <VOISIN> soft out
+
+# hard reset (ne pas faire en production !)
+clear ip bgp *
+
+# debug généraux
+debug ip tcp transactions
+debug ip bgp
+debug ip packet
+
+# tout désactiver
+u all
+
+# DF / PMTU
+show ip bgp neigh <VOISIN> | in tcp
+
+$ VOISIN: echo '192.168.1.1 10.12.1.1 192.168.27.2' | tr ' ' '\n'
+
+
+; ============ EXEMPLE DE SORTIE BGP SUMMARY ============
+
+# BGP router identifier 2.2.2.2, local AS number 65535
+# BGP table version is 7, main routing table version 7
+# 6 network entries using 864 bytes of memory
+# 7 path entries using 560 bytes of memory
+# 3/3 BGP path/bestpath attribute entries using 408 bytes of memory
+# 2 BGP AS-PATH entries using 48 bytes of memory
+# 0 BGP route-map cache entries using 0 bytes of memory
+# 0 BGP filter-list cache entries using 0 bytes of memory
+# BGP using 1880 total bytes of memory
+# BGP activity 6/0 prefixes, 7/0 paths, scan interval 60 secs
+#
+# Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+# 1.1.1.1         4        65531     108     118        7    0    0 01:43:01        3
+# 5.5.5.5         4        65535     122     120        7    0    0 01:42:46        3

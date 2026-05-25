@@ -1,0 +1,15 @@
+% navi,install,setup,tools,category:shell,pushou
+
+# packages for my navi cheatsheet
+sudo apt install ripgrep
+sudo apt install  libosinfo-bin
+
+
+# cargo install
+cargo install --locked navi 
+
+# install
+cargo install feroxbuster rustscan 
+
+
+

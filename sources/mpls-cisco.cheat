@@ -1,0 +1,251 @@
+% mpls,cisco,commandes,configuration,ldp,vpn,category:networking-cisco,pushou
+
+
+; ============ DIAGNOSTIC MPLS ============
+
+# table de forwarding (labels)
+sh mpls forwarding-table
+
+# interfaces avec MPLS activé
+sh mpls interfaces
+
+# voisin LDP
+sh mpls ldp neighbor
+
+# découverte LDP
+sh mpls ldp discovery
+
+# configuration MPLS
+sh run mpls
+sh run | include mpls ldp router-id
+
+# interfaces VRF
+sh ip vrf interfaces
+
+# debug LDP (legacy)
+show tag-switching tdp neighbor
+
+# debug forwarding (legacy)
+show tag-switching forwarding-table
+
+$ VRF: echo 'custA custB custC' | tr ' ' '\n'
+
+
+; ============ MPLS BASIQUE (LSR Transit) ============
+
+# Activer CEF (améliore les performances MPLS)
+conf t
+ ip cef distributed
+
+# Auto-config LDP (déclenche LDP sur toutes les interfaces OSPF)
+router ospf 1
+ mpls ldp autoconfig
+
+# Activer MPLS sur une interface
+interface <IFACE>
+ mpls ip
+
+$ IFACE: echo 'FastEthernet0/0 FastEthernet1/0 GigabitEthernet0/1' | tr ' ' '\n'
+
+
+; ============ CONFIGURATION LSR (Provider) ============
+
+# Loopback (router-id LDP)
+interface Loopback2
+ ip address 2.2.2.2 255.255.255.255
+
+# Interfaces physiques avec MPLS
+interface FastEthernet0/0
+ ip address 10.0.12.2 255.255.255.252
+ duplex auto
+ speed auto
+ mpls ip
+
+interface FastEthernet1/0
+ ip address 10.0.23.2 255.255.255.252
+ duplex auto
+ speed auto
+ mpls ip
+
+interface FastEthernet2/0
+ ip address 10.0.24.2 255.255.255.252
+ duplex auto
+ speed auto
+ mpls ip
+
+# OSPF pour la découverte LDP
+router ospf 1
+ router-id 2.2.2.2
+ log-adjacency-changes
+ network 2.2.2.2 0.0.0.0 area 0
+ network 10.0.12.0 0.0.0.3 area 0
+ network 10.0.23.0 0.0.0.3 area 0
+ network 10.0.24.0 0.0.0.3 area 0
+
+$ IFACE: echo 'FastEthernet0/0 FastEthernet1/0 FastEthernet2/0 GigabitEthernet0/0 GigabitEthernet0/1' | tr ' ' '\n'
+$ LSR_IP: echo '2.2.2.2 3.3.3.3 4.4.4.4' | tr ' ' '\n'
+$ PE_IP: echo '1.1.1.1 5.5.5.5 10.0.12.2 10.0.23.2' | tr ' ' '\n'
+
+
+; ============ CONFIGURATION PE (Provider Edge / LER) L3VPN ============
+
+# Loopback PE
+interface Loopback3
+ ip address 3.3.3.3 255.255.255.255
+
+# Interface vers le Provider (P) avec MPLS
+interface FastEthernet0/0
+ ip address 10.0.23.1 255.255.255.252
+ duplex auto
+ speed auto
+ mpls ip
+
+# Interface vers le Client (CE) — VRF
+interface FastEthernet1/0
+ ip vrf forwarding <VRF>
+ ip address 192.168.3.3 255.255.255.0
+ duplex auto
+ speed auto
+
+# Deuxième VRF
+interface FastEthernet2/0
+ ip vrf forwarding <VRF2>
+ ip address 192.168.4.4 255.255.255.0
+ duplex auto
+ speed auto
+
+# IGP interne au Provider
+router ospf 1
+ router-id 3.3.3.3
+ log-adjacency-changes
+ network 3.3.3.3 0.0.0.0 area 0
+ network 10.0.23.0 0.0.0.3 area 0
+
+# BGP MP-BGP (iBGP entre PE)
+router bgp <ASN>
+ no bgp default ipv4-unicast
+ bgp log-neighbor-changes
+ neighbor <PE_VOCIN> remote-as <ASN>
+ neighbor <PE_VOCIN> update-source Loopback3
+
+ # IPv4 unicast
+ address-family ipv4
+  neighbor <PE_VOCIN> activate
+  no auto-summary
+  no synchronization
+ exit-address-family
+
+ # VPNv4 (distribution des labels)
+ address-family vpnv4
+  neighbor <PE_VOCIN> activate
+  neighbor <PE_VOCIN> send-community extended
+ exit-address-family
+
+ # VRF cliente (redistribution IGP → BGP)
+ address-family ipv4 vrf <VRF>
+  redistribute ospf <OSPF_VRF> metric 200 subnets
+  no synchronization
+ exit-address-family
+
+$ ASN: echo '200 65000 65100' | tr ' ' '\n'
+$ PE_VOICN: echo '1.1.1.1 4.4.4.4 10.0.23.1' | tr ' ' '\n'
+$ VRF: echo 'custA custB custC' | tr ' ' '\n'
+$ VRF2: echo 'custB custC' | tr ' ' '\n'
+$ OSPF_VRF: echo '1 2 10' | tr ' ' '\n'
+
+
+; ============ ROUTE DISTINGUISHER & ROUTE TARGET ============
+
+# Créer la VRF
+ip vrf <VRF>
+ rd <ASN>:<NUM>
+ route-target import <ASN>:<NUM>
+ route-target export <ASN>:<NUM>
+
+# Exemple pour custA (ASN 200, num 1)
+ip vrf custA
+ rd 200:1
+ route-target import 200:1
+ route-target export 200:1
+
+# Route Distinguisher : format AS:NUM
+# Route Target : utilisé pour l'import/export entre VRF
+
+$ VRF: echo 'custA custB custC' | tr ' ' '\n'
+$ ASN: echo '200 65000 65100' | tr ' ' '\n'
+$ NUM: echo '1 2 3 10 100' | tr ' ' '\n'
+
+
+; ============ IGP DANS UNE VRF ============
+
+# OSPF dans une VRF
+router ospf <OSPF_ID> vrf <VRF>
+ log-adjacency-changes
+ redistribute bgp <BGP_ASN> metric 200 subnets
+ network <VRF_NET> 0.0.0.255 area 0
+
+# EIGRP dans une VRF
+router eigrp <EIGRP_ASN>
+ no auto-summary
+ address-family ipv4 vrf <VRF>
+  redistribute bgp <BGP_ASN>
+  network <VRF_NET>
+  default-metric 10000 100 255 1 1500
+  auto-summary
+  autonomous-system <EIGRP_ASN>
+ exit-address-family
+
+$ OSPF_ID: echo '1 2 10' | tr ' ' '\n'
+$ VRF: echo 'custA custB custC' | tr ' ' '\n'
+$ VRF_NET: echo '192.168.3.0 192.168.4.0 10.10.10.0' | tr ' ' '\n'
+$ BGP_ASN: echo '200 65000' | tr ' ' '\n'
+$ EIGRP_ASN: echo '10 100 65000' | tr ' ' '\n'
+
+
+; ============ TABLE DE FORWARDING MPLS ============
+
+# Exemple de sortie sh mpls forwarding-table :
+#
+# Local  Outgoing    Prefix            Bytes tag  Outgoing   Next Hop
+# tag    tag or VC   or Tunnel Id      switched   interface
+# 16     Pop tag     10.0.24.0/30      0          Fa2/0      10.0.12.2
+# 17     Pop tag     2.2.2.2/32        0          Fa2/0      10.0.12.2
+# 18     Pop tag     1.1.1.1/32        0          Fa2/0      10.0.12.2
+# 19     16          3.3.3.3/32        0          Fa2/0      10.0.12.2
+# 20     17          4.4.4.4/32        0          Fa2/0      10.0.12.2
+# 21     Untagged    5.0.0.0/8[V]      0          Fa1/0      192.168.1.5
+# 22     Aggregate   192.168.1.0/24[V] 0
+#
+# Colonnes :
+# Local tag   : label local reçu
+# Outgoing tag: label à apposer (ou "Pop tag" à la sortie, "Untagged" vers CE)
+# Prefix      : FEC associée (avec [V] pour VRF)
+# OutQ        : file de sortie
+# Next Hop    : prochain saut
+
+
+; ============ MTR / TRACEROUTE AVEC MPLS ============
+
+# mtr avec affichage MPLS et AS
+mtr --tcp --port 443 --show-ips --mpls --aslookup --curses <FQDN>
+
+# traceroute
+traceroute -A -n -e -i eth0 <IP>
+
+$ FQDN: echo 'www.umontpellier.fr 8.8.8.8 194.199.227.220' | tr ' ' '\n'
+
+
+; ============ DIAGNOSTIQUE LDP ============
+
+# Voir les voisins LDP
+show tag-switching tdp neighbor
+#
+# Exemple de sortie :
+# Peer LDP Ident: 2.2.2.2:0; Local LDP Ident 1.1.1.1:0
+#   TCP connection: 2.2.2.2.62837 - 1.1.1.1.646
+#   State: Oper; Msgs sent/rcvd: 141/142; Downstream
+#   Up time: 01:55:58
+#   LDP discovery sources:
+#    FastEthernet2/0, Src IP addr: 10.0.12.2
+#       Addresses bound to peer LDP Ident:
+#         10.0.12.2       2.2.2.2         10.0.23.2       10.0.24.2

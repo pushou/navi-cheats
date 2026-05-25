@@ -1,0 +1,149 @@
+% iproute2,ip,network,networking,category:network,pushou
+
+; everyday use
+# ip -color --brief a
+ip -c --brief a
+# ip -color --brief a short
+ip -c -br a show
+
+# ip -color --brief a short
+ip -c -br link show
+# ip link set  <PHY_NETWORK_INT> <UP_DOWN>
+sudo ip link set <PHY_NETWORK_INT> <UP_DOWN>
+
+# ip link show  <PHY_NETWORK_INT> 
+sudo ip link show <PHY_NETWORK_INT> 
+
+# ip address show dev <PHY_NETWORK_INT>
+ip  a sho dev <PHY_NETWORK_INT> 
+
+# ip address flush dev 
+sudo ip a flush dev <PHY_NETWORK_INT>
+
+# ip -4  route  get <NETWORK_OR_IPADDR>  
+sudo ip -4  route  get <NETWORK_OR_IPADDR>       
+
+# ip -4  route  list <NETWORK_OR_IPADDR>  
+sudo ip -4  route  list <NETWORK_OR_IPADDR>       
+
+# get ip route local table
+ip route list table local type local
+
+# ip nei
+ip nei
+
+## ip interface stat
+ip -s li
+
+## ip nei with stats
+ip -s nei 
+
+# vlan
+ip link add link <PHY_NETWORK_INT> <vlan> type vlan id <vlanid>
+ip link set <vlan> up
+ip link show <vlan>
+
+# ip -<IP_VERSION> route <IPROUTE_ORDERS> <NETWORK> via <IP> dev <PHY_NETWORK_INT>
+sudo ip -<IP_VERSION> route  <IPROUTE_ORDERS> <NETWORK> via <IP> dev <PHY_NETWORK_INT>        
+
+# create the pair of veth interfaces named, veth0 and veth1
+sudo ip link add veth0 type veth peer name veth1
+sudo ip netns add netns1
+sudo ip netns add netns2
+sudo ip link add veth1 netns netns1 type veth peer name veth2 netns netns2
+
+# create macvlan
+sudo ip link add macvlan1 link <PHY_NETWORK_INT> type macvlan mode bridge
+;sudo ip netns add netns1
+;sudo ip netns add netns2
+;sudo ip link set macvlan1 netns netns1
+
+# create ipvlan
+sudo ip link add name ipvl0 link <PHY_NETWORK_INT> type ipvlan mode l2
+;ip netns add nsipvlan1
+;ip link set dev ipvl0 netns nsipvlan1
+
+# create macvtap
+sudo ip link add link <PHY_NETWORK_INT> name macvtap0 type macvtap
+
+# create dummy
+sudo ip link add dummy1 type dummy
+sudo ip addr add 1.1.1.1/24 dev dummy1
+sudo ip link set dummy1 up
+
+# ip link delete dummy|veth|macvlan|macvtap|ipvlan
+sudo ip link delete <NO_PHY_NETWORK_INT> 
+
+;netns 
+
+# ip netns add <NETNS_NAME>
+sudo ip netns add <NETNS_NAME>
+
+# ip netns list
+sudo ip netns list
+
+# add veth in netns 
+sudo ip link set <VETH_INT> netns <NETNS>
+
+# ip netns exec <NETNS>  python3 -m http.server 8080
+sudo ip netns exec <NETNS>  python3 -m http.server 8080
+
+;  full param too complicated?
+# ip <IP_VERSION> <OBJECT> <ORDER>
+sudo ip -<IP_VERSION> <OBJECTS> <ORDERS> dev <PHY_NETWORK_INT>        
+
+
+; I never use theese. Only for memo. See interesting link  http://baturin.org/docs/iproute2
+
+# ip netconf show
+sudo ip -<IP_VERSION> netconf show dev <PHY_NETWORK_INT>
+# ip monitor <OBJECTS> or all
+sudo ip monitor <OBJECTS>
+
+# ip monitor ${event type} file ${path to the log file}
+sudo rtmon -family <FAMILY> <RTMON_ORDER> file '/tmp/rtmon.log'
+
+# list linux routing table
+ip rule
+
+# list linux table 
+ip route show table <POLICY_ROUTING_TABLE> type <POLICY_ROUTING_RULE>
+
+# create persistent custom policy routing table
+echo <ID_TABLE> <table_name> >> /etc/iproute2/rt_tables
+
+# create non persistent policy routing rule
+ip rule add from <ip_source_address> lookup <EXISTENT_TABLE_NAME>
+
+# add a default route to a table
+ip route add default via <next_hop> dev <PHY_NETWORK_INT> table  <EXISTENT_TABLE_NAME> 
+
+# policy routing full example (vpn)
+echo 1 vpn1 >> /etc/ip route2/rt_tables
+echo 2 vpn2 >> /etc/ip route2/rt_tables
+ip route add default dev tun0 table vpn1
+ip route add default dev tun2 table vpn2
+iptables -A PREROUTING -t mangle -i eth0 -p tcp --dport 22 -j MARK --set-mark 1
+iptables -A PREROUTING -t mangle -i eth0 -p tcp --dport 80 -j MARK --set-mark 2
+ip rule add from all fwmark 1 table vpn1
+ip rule add from all fwmark 2 table vpn2
+
+
+# ip route to a blackhole
+sudo ip route del blackhole 8.8.8.8
+
+$ EXISTENT_TABLE_NAME: echo $(cat /etc/iproute2/rt_tables|grep -v '#'| awk '{print $2}') | tr ' ' '\n'
+$ ID_TABLE : echo {1..255} | tr ' ' '\n'
+$ POLICY_ROUTING_TABLE: echo 'local main default all' | tr ' ' '\n' 
+$ POLICY_ROUTING_RULE: echo 'local nat broadcast' | tr ' ' '\n'
+$ IP_VERSION: echo '4 6' | tr ' ' '\n'
+$ UP_DOWN: echo 'up down' | tr ' ' '\n'
+$ OBJECTS: echo $(ip --help 2>&1| awk '/OBJECT/ {print $0}'|awk -F:'|' '{print $3}'|sed 's/[|,=,{,},OPTIONS]//g')| tr ' ' '\n'
+$ ORDERS: echo 'add show del flush pids exec' | tr ' ' '\n'
+$ IPROUTE_ORDERS: echo 'list get flush add del change append replace showdump save restore' | tr ' ' '\n'
+$ PHY_NETWORK_INT: echo $(sudo ip link show|awk '{print $2}'|egrep '^en|^wl'|sed 's/://')| tr ' ' '\n'
+$ NO_PHY_NETWORK_INT: echo $(sudo ip link show|awk '{print $2}'|grep -E '^mac|ipv|veth|dumy'|sed 's/://'|awk '{print $1}' FS=@)| tr ' ' '\n'
+$ VETH_INT: echo $(sudo ip link show|awk '{print $2}'|grep '^veth'|sed 's/://'|awk '{print $1}' FS=@)| tr ' ' '\n'
+$ FAMILY: echo 'inet inet6' | tr ' ' '\n'
+$ RTMON_ORDER: echo 'route link address all' | tr ' ' '\n'
+$ NETNS: echo $(sudo ip netns list|awk '{print $1}')| tr ' ' '\n'

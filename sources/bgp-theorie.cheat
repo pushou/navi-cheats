@@ -1,0 +1,161 @@
+% bgp,theorie,routing,network,category:networking-cisco,pushou
+
+
+; ============ DÉFINITIONS ============
+
+# Autonomous System (AS)
+# Un AS est un ensemble de réseaux gérés par une seule entité
+# Exemple : RENATER fédère les réseaux universitaires français
+
+# Types d'ISP
+# Tier 1 : structurent l'internet (peering uniquement)
+# Tier 2 : vendent et achètent du transit
+# Tier 3 : ne fournissent pas de transit, peuvent être multi-homés
+
+# Points d'échange (IXP)
+# Lieux physiques où les ISP s'interconnectent
+# Exemple : France XI
+
+# Point Of Presence (POP)
+# Lieu physique permettant l'échange de données avec des entités locales
+
+# Peering vs Transit
+# Transit : service payant pour accéder à Internet
+# Peering : échange réciproque de flux, souvent économique
+# Le peering n'est PAS transitif (A+peer+B+C ne signifie pas B+peer+C)
+
+
+; ============ CARACTÉRISTIQUES BGP ============
+
+# Métrique : AS_PATH (nombre d'AS traversés)
+# Meilleur chemin = plus court AS_PATH (among autres critères)
+
+# Prévention des boucles :
+# Si l'AS_PATH contient l'AS local, le chemin est rejeté
+
+# Pas de Hello : les voisins doivent être déclarés explicitement
+# Port TCP : 179
+
+# Convergence plus lente qu'un IGP, mais gère des centaines de milliers de routes
+
+# BGP a besoin d'un IGP pour les adresses internes à l'AS
+# Une route par défaut ne suffit pas
+
+# Deux tables distinctes :
+# - Loc-RIB : table BGP ("show ip bgp")
+# - RIB : table de routage ("show ip route")
+# Il faut vérifier les deux
+
+; ============ RÈGLES BGP ============
+
+# Principe de synchronisation
+# Les routes iBGP doivent être dans la RIB IGP avant d'être annoncées à un AS différent
+# But : éviter de devenir un "black hole" de transit
+# Désactivé par défaut chez Cisco (tous les routeurs font du iBGP)
+
+# Split-Horizon iBGP
+# Une route apprise par iBGP n'est JAMAIS transmise à un autre voisin iBGP
+# Conséquence : besoin de full-mesh entre tous les routeurs iBGP
+# Alternative : Route Reflectors (RR) pour réduire le nombre de sessions
+
+
+; ============ eBGP vs iBGP ============
+
+# eBGP (between AS)
+# Session entre routeurs d'AS différents
+# TTL BGP = 1 (voisin en frontal)
+# Le voisin vérifie que son AS n'est pas dans l'AS_PATH reçu
+# Le voisin positionne le NEXT_HOP à l'IP source du routeur source
+# Le voisin ajoute son ASN dans l'AS_PATH
+# Distance administrative = 20
+
+# iBGP (within AS)
+# Session entre routeurs du même AS (TTL > 1)
+# L'AS_PATH n'est PAS modifié (pas de détection de boucles iBGP)
+# Dans un AS de transit : routes BGP invisibles pour les routeurs IGP-only
+# Solutions : routes statiques, tunneling MPLS, full-mesh iBGP, ou route reflector
+# La redistribution BGP->IGP est déconseillée (trop de routes)
+# L'NEXT_HOP n'est pas mis à jour via iBGP :
+#   - Solution 1 : injecter le NEXT_HOP dans l'IGP (network dans le routeur eBGP de bordure)
+#   - Solution 2 : "next-hop-self" sur le routeur iBGP
+# Distance administrative = 200
+
+
+; ============ ROUTE REFLECTOR ============
+
+# Réduit le full-mesh iBGP nécessaire
+# Sur le RR :
+#   neighbor <IP> remote-as <ASN>
+#   neighbor <IP> route-reflector-client
+# Sur le client :
+#   neighbor <IP> remote-as <ASN>
+
+; ============ MP-BGP (Multiprotocol) ============
+
+# Transporte plusieurs familles d'adresses
+# AFI = Address Family Identifier, SAFI = Subsequent AFI
+
+# IPv4 unicast : AFI=1 (IPv4), SAFI=1 (unicast)
+# IPv6 unicast : AFI=2 (IPv6), SAFI=1 (unicast)
+# IPv4 VPN   : AFI=1 (IPv4), SAFI=128 (VPN) — avec label associé
+
+; ============ ASN (Autonomous System Number) ============
+
+# ASN privés : 64512 - 65535
+# ASN publics : le reste (assignés par l'IANA)
+
+
+; ============ MESSAGES BGP (port TCP 179) ============
+
+# OPEN    : établissement de l'adjacence
+# UPDATE  : échange/retraits de routes
+# NOTIFICATION : message d'erreur
+# KEEPALIVE : vérification du voisin toutes les 60s
+#          (180s sans KEEPALIVE = routes supprimées)
+
+
+; ============ ÉTATS DE LA RELATION BGP ============
+
+# Idle     : démarrage, connexion au voisin
+# Connect  : après 3WHS, reset, message OPEN envoyé
+# Active   : l'autre routeur répond OPEN -> OpenSent
+# OpenSent : échange OPEN -> OpenConfirm (sans erreur)
+# OpenConfirm : attend KEEPALIVE ou NOTIFICATION
+# Established : échange de routes via UPDATE
+
+
+; ============ AGGRÉGATION BGP ============
+
+# Réduit la taille des tables de routage
+# Améliore la stabilité en cachant les "route flaps"
+
+# as-set conserve les attributs initiaux des routes
+
+
+; ============ TROUBLESHOOTING BGP ============
+
+# Fragmentation : le bit "don't fragment" peut causer des problèmes
+#   PATH MTU incohérent si PMTU discovery échoue
+
+# Configuration du peer : vérifier AS, IP, password, ACL, MTU, TTL
+
+# Erreurs sur les attributs BGP (communities, AS_PATH, NEXT_HOP, etc.)
+
+
+; ============ UTILITAIRES ============
+
+# Looking Glass
+# <https://www.cogentco.com/en/looking-glass>
+
+# Routing Information Service (RIPE RIS)
+# <https://ris-live.ripe.net/>
+
+# Julia Evans — Tools to explore BGP
+# <https://jvns.ca/blog/2021/10/05/tools-to-look-at-bgp-routes/>
+
+
+; ============ RÉFÉRENCES ============
+
+# RFC 1105 : juin 1989
+# RFC 1654 : juillet 1994
+# RFC 2283 : février 1998
