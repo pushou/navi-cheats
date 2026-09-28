@@ -31,6 +31,15 @@ sudo iw dev <WIFI_DEVICE> <IW_ORDERS>
 # iw station dump
 iw dev <WIFI_DEVICE> station dump
 
+# iw info
+iw dev wlp0s20f3 info
+
+# iw phy
+iw phy
+
+# modinfo
+modinfo iwlwifi | grep parm
+
 # wavemon
 wavemon  <WIFI_DEVICE>
 
