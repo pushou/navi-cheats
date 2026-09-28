@@ -56,6 +56,9 @@ set ip df 0
 interface FastEthernet2
 ip policy route-map nodf
 
+# You can spot a process running from a deleted file, one of the highest-value checks in Linux live response, and it fits on one line:
+
+for p in /proc/[0-9]*; do l=$(readlink "$p/exe" 2>/dev/null); [[ "$l" == *"(deleted)"* ]] && echo "$(basename $p) -> $l"; done
 
 $ PROTO: echo 'tcp udp all' | tr ' ' '\n'
 $ IP_VERSION: echo '4 6' | tr ' ' '\n'
